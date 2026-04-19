@@ -196,6 +196,7 @@ const repos = [
           <a
             href={r.href}
             class="group rounded-lg border border-slate-800 bg-slate-950 p-6 transition hover:border-indigo-500"
+            data-repo={r.name}
           >
             <div class="flex items-center justify-between">
               <span class="font-mono text-sm text-white">{r.name}</span>
@@ -207,11 +208,40 @@ const repos = [
               </span>
             </div>
             <p class="mt-2 text-sm text-slate-400">{r.desc}</p>
+            <p class="mt-4 flex items-center gap-2 text-xs">
+              <span class="font-mono text-slate-500">latest</span>
+              <span
+                class="rounded-full bg-slate-800/80 px-2 py-0.5 font-mono text-slate-300 opacity-0 transition-opacity data-[loaded]:opacity-100"
+                data-version
+                aria-live="polite"
+              >—</span>
+            </p>
           </a>
         ))}
       </div>
     </div>
   </section>
+
+  <script>
+    // Fetch the latest release tag for each repo card from the GitHub API.
+    // Runs once on load. Unauthenticated requests are limited to 60/hr/IP,
+    // which is plenty for a landing page. Repos without releases or with
+    // API errors stay at the "—" placeholder and hide the badge.
+    const cards = document.querySelectorAll<HTMLElement>('[data-repo]');
+    for (const card of cards) {
+      const repo = card.dataset.repo;
+      const badge = card.querySelector<HTMLElement>('[data-version]');
+      if (!repo || !badge) continue;
+      fetch(`https://api.github.com/repos/fireball1725/${repo}/releases/latest`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (!data?.tag_name) return;
+          badge.textContent = data.tag_name;
+          badge.dataset.loaded = '';
+        })
+        .catch(() => { /* leave placeholder */ });
+    }
+  </script>
 
   <!-- Footer -->
   <footer class="border-t border-slate-800">
