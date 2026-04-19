@@ -51,13 +51,45 @@ const repos = [
 ---
 
 <Layout>
+  <!-- Top nav -->
+  <nav class="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <a href={base} class="flex items-center gap-2.5">
+        <img
+          src={asset('logo.png')}
+          alt=""
+          width="32"
+          height="32"
+          class="h-8 w-8"
+        />
+        <span class="text-lg font-semibold tracking-tight text-white">Librarium</span>
+      </a>
+      <div class="flex items-center gap-6 text-sm">
+        <a href="#screenshots" class="text-slate-300 transition hover:text-white">Screenshots</a>
+        <a
+          href="https://github.com/fireball1725/librarium"
+          class="text-slate-300 transition hover:text-white"
+        >
+          GitHub
+        </a>
+      </div>
+    </div>
+  </nav>
+
   <!-- Hero -->
   <header class="relative overflow-hidden border-b border-slate-800">
     <div
       class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--color-brand-500)/20,_transparent_60%)]"
     >
     </div>
-    <div class="mx-auto max-w-6xl px-6 pt-24 pb-20 sm:pt-32 sm:pb-28">
+    <div class="mx-auto max-w-6xl px-6 pt-20 pb-20 sm:pt-28 sm:pb-28">
+      <img
+        src={asset('logo.png')}
+        alt="Librarium logo"
+        width="96"
+        height="96"
+        class="mb-8 h-20 w-20 drop-shadow-[0_0_24px_rgba(79,70,229,0.5)] sm:h-24 sm:w-24"
+      />
       <p class="text-sm font-semibold tracking-widest text-indigo-300 uppercase">
         Librarium
       </p>
