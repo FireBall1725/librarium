@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Leftmost book -->
+  <rect x="3" y="7.5" width="5.5" height="20.5" rx="1.4" fill="#3b9dfa"/>
+  <!-- Middle book with label bars -->
+  <rect x="10" y="12.5" width="5.5" height="15.5" rx="1.4" fill="#3b9dfa"/>
+  <rect x="11.2" y="16.5" width="3.1" height="1.2" rx="0.5" fill="#ffffff"/>
+  <rect x="11.2" y="20.8" width="3.1" height="1.2" rx="0.5" fill="#ffffff"/>
+  <!-- Rightmost book (leaning) -->
+  <path d="M18.5 5.2 L24 4.3 Q25.3 4.1 25.5 5.4 L27 27 Q27.1 28.3 25.8 28.5 L20.3 29.1 Q19 29.3 18.8 27.9 L17.3 6.7 Q17.2 5.4 18.5 5.2 Z" fill="#3b9dfa"/>
+</svg>
