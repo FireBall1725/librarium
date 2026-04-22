@@ -148,18 +148,136 @@ const repos = [
       <h2 class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
         Browse, search, and curate from any browser.
       </h2>
-      <div class="mt-12 grid gap-8 sm:grid-cols-2">
-        {webShots.map((shot) => (
-          <figure class="overflow-hidden rounded-lg border border-slate-800 bg-slate-950 shadow-xl">
-            <img
-              src={shot.src}
-              alt={shot.alt}
-              loading="lazy"
-              class="h-auto w-full"
-            />
-          </figure>
-        ))}
+      <div class="relative mt-12" data-web-carousel-root>
+        <div
+          class="flex snap-x snap-mandatory overflow-x-auto scroll-smooth rounded-lg [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          data-web-carousel
+        >
+          {webShots.map((shot) => (
+            <figure class="w-full flex-shrink-0 snap-center overflow-hidden rounded-lg border border-slate-800 bg-slate-950 shadow-xl">
+              <img
+                src={shot.src}
+                alt={shot.alt}
+                loading="lazy"
+                class="h-auto w-full"
+              />
+            </figure>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          data-web-prev
+          aria-label="Previous screenshot"
+          class="absolute top-1/2 left-2 -translate-y-1/2 rounded-full border border-slate-700 bg-slate-950/80 p-2 text-white backdrop-blur transition hover:bg-slate-800 sm:left-4"
+        >
+          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          data-web-next
+          aria-label="Next screenshot"
+          class="absolute top-1/2 right-2 -translate-y-1/2 rounded-full border border-slate-700 bg-slate-950/80 p-2 text-white backdrop-blur transition hover:bg-slate-800 sm:right-4"
+        >
+          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+          </svg>
+        </button>
+
+        <div class="mt-6 flex justify-center gap-2" data-web-dots>
+          {webShots.map((_, i) => (
+            <button
+              type="button"
+              data-index={i}
+              aria-label={`Go to screenshot ${i + 1}`}
+              class="h-2 w-2 rounded-full bg-slate-700 transition hover:bg-slate-500 data-[active]:w-6 data-[active]:bg-indigo-400"
+            ></button>
+          ))}
+        </div>
       </div>
+
+      <script>
+        const root = document.querySelector<HTMLElement>('[data-web-carousel-root]');
+        if (root) {
+          const carousel = root.querySelector<HTMLElement>('[data-web-carousel]')!;
+          const slides = Array.from(carousel.children) as HTMLElement[];
+          const dots = Array.from(
+            root.querySelectorAll<HTMLElement>('[data-web-dots] button')
+          );
+          const prev = root.querySelector<HTMLButtonElement>('[data-web-prev]')!;
+          const next = root.querySelector<HTMLButtonElement>('[data-web-next]')!;
+          const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          const INTERVAL = 5000;
+          let current = 0;
+          let timer: number | undefined;
+
+          const paintDots = () => {
+            dots.forEach((d, n) => {
+              if (n === current) d.dataset.active = '';
+              else delete d.dataset.active;
+            });
+          };
+
+          const goTo = (i: number) => {
+            current = (i + slides.length) % slides.length;
+            carousel.scrollTo({
+              left: current * carousel.clientWidth,
+              behavior: 'smooth',
+            });
+            paintDots();
+          };
+
+          const stop = () => {
+            if (timer) {
+              clearInterval(timer);
+              timer = undefined;
+            }
+          };
+          const start = () => {
+            if (reduced) return;
+            stop();
+            timer = window.setInterval(() => goTo(current + 1), INTERVAL);
+          };
+
+          prev.addEventListener('click', () => {
+            goTo(current - 1);
+            start();
+          });
+          next.addEventListener('click', () => {
+            goTo(current + 1);
+            start();
+          });
+          dots.forEach((d, i) =>
+            d.addEventListener('click', () => {
+              goTo(i);
+              start();
+            })
+          );
+
+          let scrollSync: number | undefined;
+          carousel.addEventListener('scroll', () => {
+            if (scrollSync) clearTimeout(scrollSync);
+            scrollSync = window.setTimeout(() => {
+              const i = Math.round(carousel.scrollLeft / carousel.clientWidth);
+              if (i !== current) {
+                current = i;
+                paintDots();
+                start();
+              }
+            }, 120);
+          });
+
+          root.addEventListener('mouseenter', stop);
+          root.addEventListener('mouseleave', start);
+          root.addEventListener('focusin', stop);
+          root.addEventListener('focusout', start);
+
+          paintDots();
+          start();
+        }
+      </script>
     </div>
   </section>
 
