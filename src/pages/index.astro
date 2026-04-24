@@ -80,7 +80,9 @@ const repos = [
         />
         <span class="text-lg font-semibold tracking-tight text-white">Librarium</span>
       </a>
-      <div class="flex items-center gap-6 text-sm">
+
+      <!-- Desktop links -->
+      <div class="hidden items-center gap-6 text-sm md:flex">
         <a href="#compare" class="text-slate-300 transition hover:text-white">Compare</a>
         <a href="#screenshots" class="text-slate-300 transition hover:text-white">Screenshots</a>
         <a href="#roadmap" class="text-slate-300 transition hover:text-white">Roadmap</a>
@@ -97,7 +99,62 @@ const repos = [
           GitHub
         </a>
       </div>
+
+      <!-- Mobile hamburger -->
+      <button
+        type="button"
+        data-mobile-nav-toggle
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-md border border-slate-800 text-slate-300 transition hover:border-slate-600 hover:text-white md:hidden"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-menu-icon>
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+        <svg class="hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-close-icon>
+          <line x1="6" y1="6" x2="18" y2="18" />
+          <line x1="18" y1="6" x2="6" y2="18" />
+        </svg>
+      </button>
     </div>
+
+    <!-- Mobile menu panel -->
+    <div id="mobile-nav" class="hidden border-t border-slate-800 bg-slate-950/95 backdrop-blur md:hidden" data-mobile-nav>
+      <div class="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-3 text-sm">
+        <a href="#compare" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">Compare</a>
+        <a href="#screenshots" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">Screenshots</a>
+        <a href="#roadmap" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">Roadmap</a>
+        <a href="https://fireball1725.github.io/librarium-api/" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">API docs</a>
+        <a href="https://github.com/fireball1725/librarium" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">GitHub</a>
+      </div>
+    </div>
+
+    <script>
+      // Mobile nav toggle — hamburger swaps with an X, menu panel shows/hides.
+      // Tapping any link inside the panel auto-closes it so the anchor scroll
+      // lands on content, not on the still-open menu.
+      const toggle = document.querySelector<HTMLButtonElement>('[data-mobile-nav-toggle]');
+      const panel = document.querySelector<HTMLElement>('[data-mobile-nav]');
+      const openIcon = toggle?.querySelector<SVGElement>('[data-menu-icon]');
+      const closeIcon = toggle?.querySelector<SVGElement>('[data-close-icon]');
+      if (toggle && panel && openIcon && closeIcon) {
+        const setOpen = (open: boolean) => {
+          panel.classList.toggle('hidden', !open);
+          openIcon.classList.toggle('hidden', open);
+          closeIcon.classList.toggle('hidden', !open);
+          toggle.setAttribute('aria-expanded', String(open));
+        };
+        toggle.addEventListener('click', () => {
+          setOpen(panel.classList.contains('hidden'));
+        });
+        panel.querySelectorAll('a').forEach(a =>
+          a.addEventListener('click', () => setOpen(false))
+        );
+      }
+    </script>
   </nav>
 
   <!-- Hero -->
@@ -250,7 +307,7 @@ const repos = [
         <table class="min-w-full divide-y divide-slate-800 text-sm">
           <thead class="bg-slate-950/60">
             <tr>
-              <th scope="col" class="px-4 py-3 text-left font-semibold text-slate-300">Feature</th>
+              <th scope="col" class="sticky left-0 z-10 min-w-[180px] bg-slate-950/90 px-4 py-3 text-left font-semibold text-slate-300 backdrop-blur">Feature</th>
               <th scope="col" class="px-4 py-3 text-center font-semibold text-indigo-300">Librarium</th>
               <th scope="col" class="px-4 py-3 text-center font-semibold text-slate-400">Calibre</th>
               <th scope="col" class="px-4 py-3 text-center font-semibold text-slate-400">Readarr</th>
@@ -259,28 +316,28 @@ const repos = [
           </thead>
           <tbody class="divide-y divide-slate-800 text-slate-300">
             <tr>
-              <td class="px-4 py-3">Self-hosted</td>
+              <td class="sticky left-0 bg-slate-950/90 px-4 py-3 backdrop-blur">Self-hosted</td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
             </tr>
             <tr>
-              <td class="px-4 py-3">Multi-user with per-library roles</td>
+              <td class="sticky left-0 bg-slate-950/90 px-4 py-3 backdrop-blur">Multi-user with per-library roles</td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
               <td class="px-4 py-3 text-center text-slate-500">Basic</td>
               <td class="px-4 py-3 text-center text-slate-500">No</td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
             </tr>
             <tr>
-              <td class="px-4 py-3">Print-first catalog (physical books, manga, comics)</td>
+              <td class="sticky left-0 bg-slate-950/90 px-4 py-3 backdrop-blur">Print-first catalog (physical books, manga, comics)</td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
               <td class="px-4 py-3 text-center text-slate-500">Ebook-first</td>
               <td class="px-4 py-3 text-center text-slate-500">Ebook-first</td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
             </tr>
             <tr>
-              <td class="px-4 py-3">Native iOS app with barcode scanning</td>
+              <td class="sticky left-0 bg-slate-950/90 px-4 py-3 backdrop-blur">Native iOS app with barcode scanning</td>
               <td class="px-4 py-3 text-center">
                 <span class="text-amber-400">◐</span>
                 <span class="block text-xs text-slate-500">TestFlight</span>
@@ -290,42 +347,42 @@ const repos = [
               <td class="px-4 py-3 text-center text-slate-500">No</td>
             </tr>
             <tr>
-              <td class="px-4 py-3">REST / OpenAPI</td>
+              <td class="sticky left-0 bg-slate-950/90 px-4 py-3 backdrop-blur">REST / OpenAPI</td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
               <td class="px-4 py-3 text-center text-slate-500">Limited</td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
             </tr>
             <tr>
-              <td class="px-4 py-3">AI suggestions (Ollama / Osaurus / OpenAI / Anthropic)</td>
+              <td class="sticky left-0 bg-slate-950/90 px-4 py-3 backdrop-blur">AI suggestions (Ollama / Osaurus / OpenAI / Anthropic)</td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
               <td class="px-4 py-3 text-center text-slate-500">No</td>
               <td class="px-4 py-3 text-center text-slate-500">No</td>
               <td class="px-4 py-3 text-center text-slate-500">No</td>
             </tr>
             <tr>
-              <td class="px-4 py-3">Scheduled-jobs dashboard</td>
+              <td class="sticky left-0 bg-slate-950/90 px-4 py-3 backdrop-blur">Scheduled-jobs dashboard</td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
               <td class="px-4 py-3 text-center text-slate-500">No</td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
               <td class="px-4 py-3 text-center text-slate-500">No</td>
             </tr>
             <tr>
-              <td class="px-4 py-3">Track books lent to friends and family</td>
+              <td class="sticky left-0 bg-slate-950/90 px-4 py-3 backdrop-blur">Track books lent to friends and family</td>
               <td class="px-4 py-3 text-center"><span class="text-amber-400">◐</span></td>
               <td class="px-4 py-3 text-center text-slate-500">No</td>
               <td class="px-4 py-3 text-center text-slate-500">No</td>
               <td class="px-4 py-3 text-center text-slate-500">No</td>
             </tr>
             <tr>
-              <td class="px-4 py-3">Goodreads / Libib / StoryGraph CSV import</td>
+              <td class="sticky left-0 bg-slate-950/90 px-4 py-3 backdrop-blur">Goodreads / Libib / StoryGraph CSV import</td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span><span class="text-amber-400">*</span></td>
               <td class="px-4 py-3 text-center text-slate-500">No</td>
               <td class="px-4 py-3 text-center text-slate-500">No</td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
             </tr>
             <tr>
-              <td class="px-4 py-3">Shared reading feed / activity</td>
+              <td class="sticky left-0 bg-slate-950/90 px-4 py-3 backdrop-blur">Shared reading feed / activity</td>
               <td class="px-4 py-3 text-center">
                 <span class="text-emerald-400">✓</span><span class="text-amber-400">*</span>
                 <span class="block text-xs text-slate-500">household only</span>
@@ -338,14 +395,14 @@ const repos = [
               </td>
             </tr>
             <tr>
-              <td class="px-4 py-3">Automated ebook acquisition</td>
+              <td class="sticky left-0 bg-slate-950/90 px-4 py-3 backdrop-blur">Automated ebook acquisition</td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span><span class="text-amber-400">*</span></td>
               <td class="px-4 py-3 text-center text-slate-500">No</td>
               <td class="px-4 py-3 text-center"><span class="text-emerald-400">✓</span></td>
               <td class="px-4 py-3 text-center text-slate-500">No</td>
             </tr>
             <tr>
-              <td class="px-4 py-3">Open source</td>
+              <td class="sticky left-0 bg-slate-950/90 px-4 py-3 backdrop-blur">Open source</td>
               <td class="px-4 py-3 text-center">
                 <span class="text-emerald-400">✓</span>
                 <span class="block text-xs text-slate-500">Apache&nbsp;2.0</span>
