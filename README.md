@@ -30,6 +30,12 @@ API-first: every client consumes the same OpenAPI contract, and each piece ships
 | [librarium-web](https://github.com/fireball1725/librarium-web) | React · TypeScript · Tailwind · Vite |
 | [librarium-ios](https://github.com/fireball1725/librarium-ios) | SwiftUI · iOS 26+ (TestFlight)       |
 
+Plus an optional companion service for AI clients:
+
+| Repo                                                           | Stack                                |
+| -------------------------------------------------------------- | ------------------------------------ |
+| [librarium-mcp](https://github.com/fireball1725/librarium-mcp) | MCP server · Go · streamable HTTP    |
+
 
 ## Get started
 
