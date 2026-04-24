@@ -23,19 +23,17 @@ Self-hosted, privacy-focused library tracker for physical books, manga, comics, 
 
 API-first: every client consumes the same OpenAPI contract, and each piece ships independently on a `YY.M.R` cadence.
 
-| Repo | Stack |
-|---|---|
-| [librarium-api](https://github.com/fireball1725/librarium-api) | Go · Postgres · River jobs |
+
+| Repo                                                           | Stack                                |
+| -------------------------------------------------------------- | ------------------------------------ |
+| [librarium-api](https://github.com/fireball1725/librarium-api) | Go · Postgres · River jobs           |
 | [librarium-web](https://github.com/fireball1725/librarium-web) | React · TypeScript · Tailwind · Vite |
-| [librarium-ios](https://github.com/fireball1725/librarium-ios) | SwiftUI · iOS 26+ (TestFlight) |
+| [librarium-ios](https://github.com/fireball1725/librarium-ios) | SwiftUI · iOS 26+ (TestFlight)       |
+
 
 ## Get started
 
 Follow the [librarium-api deploy guide](https://github.com/fireball1725/librarium-api#deployment) for Docker or Kubernetes. Point the web client at your running API and you're off.
-
-## Compared
-
-Quick sanity check for self-hosters weighing alternatives: see the [Compared](https://librarium.press/#compare) section on librarium.press. Short version: Librarium is the right fit if you want multi-user, print-first cataloging with native mobile scanning and a proper API. Calibre is the classic ebook-first desktop tool; Readarr automates ebook acquisition; Bookwyrm is the federated social reading option.
 
 ## Roadmap
 
