@@ -17,7 +17,7 @@ Self-hosted, privacy-focused library tracker for physical books, manga, comics, 
 - **Scheduled work, observable.** Cover backfills, metadata refreshes, and AI runs all live on a single cron-driven jobs page. Run on demand, inspect history, or let it tick quietly.
 - **Bring your own storage.** For ebooks and PDFs, Librarium stores a path reference. Your files stay where you put them.
 - **Cross-platform.** Go API, React web UI, and a native SwiftUI iOS app (TestFlight today, App Store soon).
-- **Open source.** Apache 2.0. Ship patches, file issues, or fork it.
+- **Open source.** AGPL 3.0. Ship patches, file issues, or fork it.
 
 ## Where the code lives
 
@@ -57,4 +57,4 @@ npm run build    # static build to dist/
 
 ## License
 
-Apache 2.0, matching the component repos.
+AGPL 3.0, matching the component repos.
