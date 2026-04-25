@@ -4,15 +4,91 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  /**
+   * Path to the social-share image relative to the site root. Defaults to
+   * the generic Librarium card. Pages can override per-route to ship a
+   * page-specific share preview.
+   */
+  ogImage?: string;
 }
 
 const {
-  title = 'Librarium · self-hosted library tracker',
-  description = 'Self-hosted, privacy-focused library tracker for books, manga, comics, and more. Cross-platform API, web, and iOS clients.',
+  title = 'Librarium — Self-hosted library tracker for books, manga & comics',
+  description = 'Self-hosted, privacy-focused library tracker for physical books, manga, comics, and technical documents. One instance, many libraries, zero telemetry. Open source (AGPL 3.0).',
+  ogImage = 'og.png',
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL;
 const asset = (path: string) => `${base.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
+
+// Astro.site is set to https://librarium.press in astro.config.mjs.
+// Fall back to "/" so previews still render in dev / pre-config builds.
+const siteOrigin = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? `http://${Astro.url.host}`).toString();
+const absoluteOG = `${siteOrigin}${asset(ogImage)}`;
+
+// Structured data — three top-level schemas in a single <script>:
+//
+//   • SoftwareApplication describes the product itself (name, license,
+//     screenshots, OS support, free price). This is what powers rich
+//     results when someone searches "self-hosted book tracker" and
+//     similar product-shaped queries.
+//   • Organization gives Google a stable identity for the project,
+//     anchoring sameAs links across GitHub repos and the marketing
+//     site so they cluster in the Knowledge Graph.
+//   • WebSite ties the canonical URL to the org and lets Google
+//     surface site-wide search box features later if we add a search
+//     surface.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'SoftwareApplication',
+      '@id': `${siteOrigin}/#software`,
+      name: 'Librarium',
+      description,
+      applicationCategory: 'Productivity',
+      applicationSubCategory: 'Library / Media Management',
+      operatingSystem: 'Linux, macOS, Windows (Docker), iOS',
+      url: `${siteOrigin}/`,
+      image: absoluteOG,
+      license: 'https://www.gnu.org/licenses/agpl-3.0.html',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+      },
+      author: { '@id': `${siteOrigin}/#organization` },
+      publisher: { '@id': `${siteOrigin}/#organization` },
+      sameAs: [
+        'https://github.com/fireball1725/librarium',
+        'https://github.com/fireball1725/librarium-api',
+        'https://github.com/fireball1725/librarium-web',
+        'https://github.com/fireball1725/librarium-ios',
+        'https://github.com/fireball1725/librarium-mcp',
+      ],
+    },
+    {
+      '@type': 'Organization',
+      '@id': `${siteOrigin}/#organization`,
+      name: 'Librarium',
+      url: `${siteOrigin}/`,
+      logo: `${siteOrigin}${asset('logo.png')}`,
+      sameAs: [
+        'https://github.com/fireball1725/librarium',
+      ],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${siteOrigin}/#website`,
+      url: `${siteOrigin}/`,
+      name: 'Librarium',
+      description,
+      publisher: { '@id': `${siteOrigin}/#organization` },
+      inLanguage: 'en-CA',
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -22,12 +98,34 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}/${path.replace(/^\//
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+
     <title>{title}</title>
+    <link rel="canonical" href={canonicalURL} />
+
     <link rel="icon" type="image/svg+xml" href={asset('favicon.svg')} />
     <link rel="alternate icon" type="image/png" href={asset('logo.png')} />
+
+    <!-- Open Graph (Facebook, Discord, Slack, LinkedIn) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Librarium" />
+    <meta property="og:locale" content="en_CA" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={absoluteOG} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Librarium — self-hosted library tracker for books, manga, and comics" />
+
+    <!-- Twitter / X — Twitter doesn't always fall back to OG cleanly -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={absoluteOG} />
+    <meta name="twitter:image:alt" content="Librarium — self-hosted library tracker for books, manga, and comics" />
+
+    <!-- Structured data: SoftwareApplication + Organization + WebSite -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body class="bg-slate-950 text-slate-100 antialiased">
     <slot />

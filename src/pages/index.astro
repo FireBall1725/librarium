@@ -48,15 +48,15 @@ const features = [
 ];
 
 const webShots = [
-  { src: asset('screenshots/web/dashboard.png'), alt: 'Librarium web dashboard' },
-  { src: asset('screenshots/web/books_grid.png'), alt: 'Books grid view' },
-  { src: asset('screenshots/web/books_list.png'), alt: 'Books list view' },
-  { src: asset('screenshots/web/contrubitors.png'), alt: 'Contributors page' },
+  { src: asset('screenshots/web/dashboard.webp'), alt: 'Librarium web dashboard' },
+  { src: asset('screenshots/web/books_grid.webp'), alt: 'Books grid view' },
+  { src: asset('screenshots/web/books_list.webp'), alt: 'Books list view' },
+  { src: asset('screenshots/web/contributors.webp'), alt: 'Contributors page' },
 ];
 
 const iosShots = [
-  { src: asset('screenshots/ios/library_catalogue.PNG'), alt: 'iOS library catalogue' },
-  { src: asset('screenshots/ios/book_details.PNG'), alt: 'iOS book details' },
+  { src: asset('screenshots/ios/library_catalogue.webp'), alt: 'iOS library catalogue' },
+  { src: asset('screenshots/ios/book_details.webp'), alt: 'iOS book details' },
 ];
 
 const repos = [
@@ -76,7 +76,7 @@ const companions = [
     <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
       <a href={base} class="flex items-center gap-2.5">
         <img
-          src={asset('logo.png')}
+          src={asset('logo-192.png')}
           alt=""
           width="32"
           height="32"
@@ -92,12 +92,14 @@ const companions = [
         <a href="#roadmap" class="text-slate-300 transition hover:text-white">Roadmap</a>
         <a
           href="https://fireball1725.github.io/librarium-api/"
+          rel="noopener"
           class="text-slate-300 transition hover:text-white"
         >
           API docs
         </a>
         <a
           href="https://github.com/fireball1725/librarium"
+          rel="noopener"
           class="text-slate-300 transition hover:text-white"
         >
           GitHub
@@ -131,8 +133,8 @@ const companions = [
         <a href="#compare" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">Compare</a>
         <a href="#screenshots" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">Screenshots</a>
         <a href="#roadmap" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">Roadmap</a>
-        <a href="https://fireball1725.github.io/librarium-api/" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">API docs</a>
-        <a href="https://github.com/fireball1725/librarium" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">GitHub</a>
+        <a href="https://fireball1725.github.io/librarium-api/" rel="noopener" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">API docs</a>
+        <a href="https://github.com/fireball1725/librarium" rel="noopener" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">GitHub</a>
       </div>
     </div>
 
@@ -169,10 +171,12 @@ const companions = [
     </div>
     <div class="mx-auto max-w-6xl px-6 pt-20 pb-20 sm:pt-28 sm:pb-28">
       <img
-        src={asset('logo.png')}
+        src={asset('logo-192.png')}
         alt="Librarium logo"
         width="96"
         height="96"
+        fetchpriority="high"
+        decoding="async"
         class="mb-8 h-20 w-20 drop-shadow-[0_0_24px_rgba(79,70,229,0.5)] sm:h-24 sm:w-24"
       />
       <div class="flex flex-wrap items-center gap-3">
@@ -202,6 +206,7 @@ const companions = [
       <div class="mt-10 flex flex-wrap items-center gap-4">
         <a
           href="https://github.com/fireball1725/librarium-api#deployment"
+          rel="noopener"
           class="inline-flex items-center gap-2 rounded-md bg-indigo-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-400"
         >
           Deploy it
@@ -664,6 +669,7 @@ const companions = [
         {repos.map((r) => (
           <a
             href={r.href}
+            rel="noopener"
             class="group rounded-lg border border-slate-800 bg-slate-950 p-6 transition hover:border-indigo-500"
             data-repo={r.name}
           >
@@ -761,8 +767,8 @@ const companions = [
         © {new Date().getFullYear()} Librarium · Apache 2.0 licensed
       </p>
       <div class="flex gap-6 text-sm text-slate-400">
-        <a href="https://github.com/fireball1725/librarium" class="hover:text-white">GitHub</a>
-        <a href="https://github.com/fireball1725/librarium/issues" class="hover:text-white">Issues</a>
+        <a href="https://github.com/fireball1725/librarium" rel="noopener" class="hover:text-white">GitHub</a>
+        <a href="https://github.com/fireball1725/librarium/issues" rel="noopener" class="hover:text-white">Issues</a>
       </div>
     </div>
   </footer>
