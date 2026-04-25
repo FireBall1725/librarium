@@ -14,6 +14,12 @@ export default defineConfig({
     sitemap(),
   ],
   vite: {
+    // @ts-expect-error — Astro carries its own pinned Vite, and
+    // @tailwindcss/vite resolves Vite from the top-level deps; the
+    // two type instances aren't structurally identical so TS rejects
+    // the assignment even though the runtime behaviour is correct.
+    // Build + dev work fine; this is a known dedup issue with
+    // Astro 5 + Tailwind v4 that we tolerate at the config seam.
     plugins: [tailwindcss()],
   },
 });
