@@ -1,6 +1,6 @@
 # Librarium
 
-Self-hosted, privacy-focused library tracker for physical books, manga, comics, and technical documents. One instance, many libraries, zero telemetry.
+Self-hosted, privacy-focused tracker for your physical book, manga, and comic collection. A self-hosted alternative to Libib and similar cloud catalog services. One instance, many libraries, zero telemetry.
 
 > ⚠︎ **Early beta.** Things are changing fast, some edges are rough, and self-hosters should expect to read release notes before upgrading.
 
@@ -13,6 +13,7 @@ Self-hosted, privacy-focused library tracker for physical books, manga, comics, 
 - **Self-hosted, always.** Runs on your own infrastructure in Docker or Kubernetes. No telemetry. No external data calls unless you explicitly ask for a metadata lookup.
 - **Multi-library, multi-user.** One instance hosts independent libraries (shared household, personal collection, tech manuals) with per-library roles.
 - **Print-first catalog.** FRBR-style work/edition model covers physical books, manga, comics, magazines, and technical documents without schema gymnastics.
+- **Barcode scanning.** Scan an ISBN at the bookstore from the iOS app — instantly see whether you already own it, or add it to any of your libraries.
 - **Bring your own AI.** Opt-in reading suggestions backed by Ollama, Osaurus, OpenAI, or Anthropic. Pick your provider and model. Run locally or ship it to the cloud, your call.
 - **Scheduled work, observable.** Cover backfills, metadata refreshes, and AI runs all live on a single cron-driven jobs page. Run on demand, inspect history, or let it tick quietly.
 - **Bring your own storage.** For ebooks and PDFs, Librarium stores a path reference. Your files stay where you put them.
@@ -21,20 +22,15 @@ Self-hosted, privacy-focused library tracker for physical books, manga, comics, 
 
 ## Where the code lives
 
-API-first: every client consumes the same OpenAPI contract, and each piece ships independently on a `YY.M.R` cadence.
+API-first: every client consumes the same OpenAPI contract, and each piece ships independently on a `YY.M.R` cadence. **You are here** marks this repo.
 
-
-| Repo                                                           | Stack                                |
-| -------------------------------------------------------------- | ------------------------------------ |
-| [librarium-api](https://github.com/fireball1725/librarium-api) | Go · Postgres · River jobs           |
-| [librarium-web](https://github.com/fireball1725/librarium-web) | React · TypeScript · Tailwind · Vite |
-| [librarium-ios](https://github.com/fireball1725/librarium-ios) | SwiftUI · iOS 26+ (TestFlight)       |
-
-Plus an optional companion service for AI clients:
-
-| Repo                                                           | Stack                                |
-| -------------------------------------------------------------- | ------------------------------------ |
-| [librarium-mcp](https://github.com/fireball1725/librarium-mcp) | MCP server · Go · streamable HTTP    |
+| Repo                                                                              | Role                                                                       |
+| --------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [`librarium`](https://github.com/fireball1725/librarium) ← **you are here**       | Marketing site at [librarium.press](https://librarium.press), planning docs |
+| [`librarium-api`](https://github.com/fireball1725/librarium-api)                  | Backend · Go · Postgres · River jobs                                       |
+| [`librarium-web`](https://github.com/fireball1725/librarium-web)                  | Web client · React · TypeScript · Tailwind · Vite                          |
+| [`librarium-ios`](https://github.com/fireball1725/librarium-ios)                  | Native iOS client · SwiftUI · iOS 26+ (TestFlight)                         |
+| [`librarium-mcp`](https://github.com/fireball1725/librarium-mcp)                  | MCP server · Go · chat with your library from Claude / Cursor / etc.       |
 
 
 ## Get started
