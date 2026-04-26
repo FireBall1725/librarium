@@ -1,0 +1,20 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discussions
+    url: https://github.com/fireball1725/librarium/discussions
+    about: Open-ended ideas, "what should this become", and questions go here.
+  - name: API issues
+    url: https://github.com/fireball1725/librarium-api/issues
+    about: Use this for issues specific to the API.
+  - name: Web issues
+    url: https://github.com/fireball1725/librarium-web/issues
+    about: Use this for issues specific to the web client.
+  - name: iOS issues
+    url: https://github.com/fireball1725/librarium-ios/issues
+    about: Use this for issues specific to the iOS app.
+  - name: MCP issues
+    url: https://github.com/fireball1725/librarium-mcp/issues
+    about: Use this for issues specific to the MCP server.
+  - name: Documentation / roadmap
+    url: https://github.com/fireball1725/librarium/blob/main/PLAN.md
+    about: Read the architecture overview and roadmap.

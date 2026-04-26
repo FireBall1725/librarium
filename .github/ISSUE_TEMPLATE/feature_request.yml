@@ -1,0 +1,55 @@
+name: Feature request
+description: Suggest an improvement or new capability
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Feature requests are welcome. Please check existing issues before submitting to avoid duplicates.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of Librarium would this affect?
+      options:
+        - API (librarium-api)
+        - Web (librarium-web)
+        - iOS (librarium-ios)
+        - Media server (librarium-media)
+        - Multiple / cross-cutting
+        - Other / unsure
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the use case or pain point. "I want to…" or "Currently I have to…"
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe what you'd like to see added or changed.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've considered
+      description: Any workarounds you're currently using, or other approaches you thought about.
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Screenshots, mockups, links to similar features in other apps, etc.
+    validations:
+      required: false

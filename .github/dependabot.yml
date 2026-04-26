@@ -1,0 +1,26 @@
+# Dependabot — automated dep update PRs.
+# Marketing site is Astro + Tailwind, deploys continuously on push to
+# main. Weekly cadence is fine; nothing is high-stakes.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels: ["dependencies"]
+    groups:
+      npm-deps:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    labels: ["dependencies"]
+    groups:
+      ci-actions:
+        patterns: ["*"]
