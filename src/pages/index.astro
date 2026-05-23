@@ -7,8 +7,8 @@ const asset = (path: string) => `${base.replace(/\/$/, '')}/${path.replace(/^\//
 const features = [
   {
     icon: 'server',
-    title: 'Self-hosted, always',
-    body: 'Runs on your infrastructure in Docker or Kubernetes. No telemetry. No external data calls unless you ask for a metadata lookup.',
+    title: 'Self-hosted',
+    body: 'Runs on your infrastructure in Docker or Kubernetes. Telemetry is opt-in and off by default. No external data calls unless you ask for a metadata lookup.',
   },
   {
     icon: 'users',
@@ -39,6 +39,11 @@ const features = [
     icon: 'devices',
     title: 'Cross-platform',
     body: 'Go API, React web UI, and a native SwiftUI iOS app (TestFlight today, App Store soon).',
+  },
+  {
+    icon: 'barcode',
+    title: 'Barcode scanning',
+    body: 'Scan an ISBN at the bookstore from the iOS app. Instantly see if you already own it, or add it to any of your libraries.',
   },
   {
     icon: 'code',
@@ -88,15 +93,53 @@ const faqs = [
   },
   {
     q: 'Is Librarium free?',
-    a: 'Yes. Every repo is AGPL 3.0 licensed. You self-host, you own it. There is no paid tier and no managed cloud version — the project is intentionally self-hosted only.',
+    a: 'Self-hosted Librarium is free and AGPL 3.0 licensed, and it ships today. Lite for iOS will also be free. Plus, the hosted version we run for you, will be a paid monthly subscription with a free trial. Both Lite and Plus are on the roadmap.',
   },
   {
     q: 'Does Librarium send my data anywhere?',
-    a: 'No telemetry. The only outbound network calls are metadata lookups you actively trigger — ISBN scans, cover backfills — and you choose which providers to enable. Optional AI reading suggestions are off by default and use either your local Ollama instance or your own OpenAI / Anthropic API keys.',
+    a: 'Telemetry is opt-in and off by default. Self-hosted instances require an operator flag plus per-user consent before anything leaves the box, and the code that does the sending lives in the public repos. The only other outbound network calls are metadata lookups you actively trigger, like ISBN scans and cover backfills. You choose which providers to enable. Optional AI reading suggestions are off by default and use either your local Ollama instance or your own OpenAI or Anthropic API keys.',
   },
   {
     q: 'Can I import my Goodreads, StoryGraph, or Libib library?',
     a: 'CSV import from Goodreads, StoryGraph, and Libib is on the 26.5 roadmap. Once shipped, you drop in the export from any of those services and Librarium will hydrate the catalog with metadata and covers from your configured providers.',
+  },
+];
+
+const roadmap = [
+  {
+    status: 'Shipping next',
+    headerClass: 'text-emerald-300',
+    dotClass: 'bg-emerald-400',
+    items: [
+      'iOS app redesign',
+      'Lite mode for iOS',
+      'Sync protocol (per-field timestamps, delta API)',
+      'App Store launch',
+    ],
+  },
+  {
+    status: 'On deck',
+    headerClass: 'text-amber-300',
+    dotClass: 'bg-amber-400',
+    items: [
+      'CSV import (Goodreads, StoryGraph, Libib)',
+      'Bookstore links',
+      'Opt-in telemetry SDK',
+      'Plus hosted edition',
+      'Series rework',
+    ],
+  },
+  {
+    status: 'Exploring',
+    headerClass: 'text-slate-400',
+    dotClass: 'bg-slate-500',
+    items: [
+      'iPad and Mac apps',
+      'Shared reading feed (household scope)',
+      'AI metadata enrichment',
+      'Library invite links',
+      'Bulk select on books grid',
+    ],
   },
 ];
 ---
@@ -118,6 +161,7 @@ const faqs = [
 
       <!-- Desktop links -->
       <div class="hidden items-center gap-6 text-sm md:flex">
+        <a href="#editions" class="text-slate-300 transition hover:text-white">Editions</a>
         <a href="#compare" class="text-slate-300 transition hover:text-white">Compare</a>
         <a href="#screenshots" class="text-slate-300 transition hover:text-white">Screenshots</a>
         <a href="#faq" class="text-slate-300 transition hover:text-white">FAQ</a>
@@ -162,6 +206,7 @@ const faqs = [
     <!-- Mobile menu panel -->
     <div id="mobile-nav" class="hidden border-t border-slate-800 bg-slate-950/95 backdrop-blur md:hidden" data-mobile-nav>
       <div class="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-3 text-sm">
+        <a href="#editions" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">Editions</a>
         <a href="#compare" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">Compare</a>
         <a href="#screenshots" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">Screenshots</a>
         <a href="#faq" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">FAQ</a>
@@ -229,7 +274,7 @@ const faqs = [
       </h1>
       <p class="mt-6 max-w-2xl text-lg text-slate-300 sm:text-xl">
         A self-hosted, privacy-focused tracker for physical books, manga, comics,
-        and technical documents. One instance, many libraries, zero telemetry.
+        and technical documents. One instance, many libraries. Opt-in telemetry, off by default.
       </p>
       <p class="mt-4 max-w-2xl text-sm text-slate-400">
         Heads up: Librarium is in early beta. Things are changing fast, some
@@ -260,11 +305,11 @@ const faqs = [
     <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
       Built for collectors who run their own stack.
     </h2>
-    <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-12 grid auto-rows-fr gap-8 sm:grid-cols-2 lg:grid-cols-3">
       {features.map((f) => (
-        <div class="rounded-lg border border-slate-800 bg-slate-900/50 p-6">
-          <div class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md bg-indigo-500/10 text-indigo-300">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <div class="flex h-full flex-col rounded-lg border border-slate-800 bg-slate-900/50 p-6">
+          <div class="flex items-center gap-3">
+            <svg class="h-5 w-5 shrink-0 text-indigo-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               {f.icon === 'server' && (
                 <>
                   <rect x="3.5" y="3.5" width="17" height="7" rx="1.25" />
@@ -315,6 +360,16 @@ const faqs = [
                   <rect x="16.5" y="8.5" width="5" height="11" rx="1.25" />
                 </>
               )}
+              {f.icon === 'barcode' && (
+                <>
+                  <path d="M5 5v14" />
+                  <path d="M8 5v14" />
+                  <path d="M11 5v14" />
+                  <path d="M14 5v14" />
+                  <path d="M17 5v14" />
+                  <path d="M20 5v14" />
+                </>
+              )}
               {f.icon === 'code' && (
                 <>
                   <path d="M8.5 7L3.5 12l5 5" />
@@ -323,12 +378,114 @@ const faqs = [
                 </>
               )}
             </svg>
+            <h3 class="text-lg font-semibold text-white">{f.title}</h3>
           </div>
-          <h3 class="text-lg font-semibold text-white">{f.title}</h3>
-          <p class="mt-2 text-sm leading-relaxed text-slate-300">{f.body}</p>
+          <p class="mt-3 text-sm leading-relaxed text-slate-300">{f.body}</p>
         </div>
       ))}
     </div>
+    </div>
+  </section>
+
+  <!-- Editions -->
+  <section id="editions" class="border-t border-slate-800">
+    <div class="mx-auto max-w-6xl px-6 py-24">
+      <p class="text-sm font-semibold tracking-widest text-indigo-300 uppercase">
+        Editions
+      </p>
+      <h2 class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+        Three ways to run Librarium.
+      </h2>
+      <p class="mt-3 max-w-2xl text-slate-300">
+        Pick the one that fits how you want to manage your library. Self-hosted is shipping today; Lite and Plus are on the roadmap.
+      </p>
+
+      <div class="mt-12 grid gap-6 lg:grid-cols-3">
+        <!-- Lite -->
+        <div class="flex flex-col rounded-lg border border-slate-800 bg-slate-900/50 p-6">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="text-xl font-semibold text-white">Lite</h3>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold tracking-wide text-amber-300 uppercase">
+              <span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+              Coming soon
+            </span>
+          </div>
+          <p class="mt-2 text-2xl font-bold text-slate-300">Free</p>
+          <p class="mt-4 text-sm text-slate-300">
+            Local storage with iCloud sync across your Apple devices, no server to run. The iOS app is on TestFlight today; Lite mode is shipping soon.
+          </p>
+          <ul class="mt-6 flex-1 space-y-2 text-sm text-slate-300">
+            <li class="flex items-start gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-500"></span>Works offline, syncs when online</li>
+            <li class="flex items-start gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-500"></span>Same data model as the server</li>
+            <li class="flex items-start gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-500"></span>ISBN lookup via Open Library</li>
+            <li class="flex items-start gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-500"></span>Promote to self-hosted or Plus any time</li>
+          </ul>
+          <a
+            href="https://testflight.apple.com/join/dA3sMnqR"
+            rel="noopener"
+            class="mt-8 inline-flex items-center justify-center gap-2 rounded-md border border-slate-700 bg-slate-900/60 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:border-slate-500"
+          >
+            Try the iOS app
+          </a>
+        </div>
+
+        <!-- Self-hosted -->
+        <div class="flex flex-col rounded-lg border border-indigo-500/40 bg-slate-900/60 p-6">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="text-xl font-semibold text-white">Self-hosted</h3>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold tracking-wide text-emerald-300 uppercase">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+              Available
+            </span>
+          </div>
+          <p class="mt-2 text-2xl font-bold text-indigo-300">Free</p>
+          <p class="mt-4 text-sm text-slate-300">
+            Run it on your own server in Docker or Kubernetes. Your data stays on your network.
+          </p>
+          <ul class="mt-6 flex-1 space-y-2 text-sm text-slate-300">
+            <li class="flex items-start gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400"></span>Full feature set, no caps</li>
+            <li class="flex items-start gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400"></span>Multi-user with per-library roles</li>
+            <li class="flex items-start gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400"></span>AI suggestions, MCP server</li>
+            <li class="flex items-start gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400"></span>Opt-in telemetry, off by default</li>
+          </ul>
+          <a
+            href="https://github.com/fireball1725/librarium-api#deployment"
+            rel="noopener"
+            class="mt-8 inline-flex items-center justify-center gap-2 rounded-md bg-indigo-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-400"
+          >
+            Deploy it
+          </a>
+        </div>
+
+        <!-- Plus -->
+        <div class="flex flex-col rounded-lg border border-slate-800 bg-slate-900/50 p-6">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="text-xl font-semibold text-white">Plus</h3>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold tracking-wide text-amber-300 uppercase">
+              <span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+              Coming soon
+            </span>
+          </div>
+          <p class="mt-2 text-2xl font-bold text-slate-300">Paid, free trial</p>
+          <p class="mt-4 text-sm text-slate-300">
+            We host Librarium for you. Free trial on launch. Walk away with your data whenever you want.
+          </p>
+          <ul class="mt-6 flex-1 space-y-2 text-sm text-slate-300">
+            <li class="flex items-start gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-500"></span>Same feature set as self-hosted</li>
+            <li class="flex items-start gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-500"></span>We handle backups and updates</li>
+            <li class="flex items-start gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-500"></span>Opt-in telemetry, off by default</li>
+            <li class="flex items-start gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-500"></span>Move to self-hosted any time</li>
+          </ul>
+          <button
+            type="button"
+            disabled
+            aria-disabled="true"
+            class="mt-8 inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-md border border-slate-700 bg-slate-900/60 px-5 py-3 text-sm font-semibold text-slate-400"
+          >
+            On the roadmap
+          </button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -931,19 +1088,26 @@ const faqs = [
         What's next.
       </h2>
       <p class="mt-3 max-w-2xl text-slate-300">
-        A proper public roadmap is on the way. Until then, watch the repos for
-        commits and releases.
+        Where each initiative sits in the pipeline. Solo project, so these are intentions not promises. Items move between columns as priorities shift.
       </p>
-      <div class="mt-10">
-        <button
-          type="button"
-          disabled
-          aria-disabled="true"
-          class="inline-flex cursor-not-allowed items-center gap-2 rounded-md border border-slate-700 bg-slate-900/60 px-5 py-3 text-sm font-semibold text-slate-400"
-        >
-          <span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
-          Coming soon
-        </button>
+
+      <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {roadmap.map((col) => (
+          <div>
+            <h3 class:list={['flex items-center gap-2 text-sm font-semibold tracking-widest uppercase', col.headerClass]}>
+              <span class:list={['h-1.5 w-1.5 rounded-full', col.dotClass]}></span>
+              {col.status}
+            </h3>
+            <ul class="mt-4 space-y-3 text-sm text-slate-300">
+              {col.items.map((item) => (
+                <li class="flex items-start gap-2">
+                  <span class:list={['mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full', col.dotClass]}></span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </div>
   </section>

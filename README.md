@@ -1,6 +1,6 @@
 # Librarium
 
-Self-hosted, privacy-focused tracker for your physical book, manga, and comic collection. A self-hosted alternative to Libib and similar cloud catalog services. One instance, many libraries, zero telemetry.
+Self-hosted, privacy-focused tracker for your physical book, manga, and comic collection. A self-hosted alternative to Libib and similar cloud catalog services. One instance, many libraries. Opt-in telemetry, off by default.
 
 > ⚠︎ **Early beta.** Things are changing fast, some edges are rough, and self-hosters should expect to read release notes before upgrading.
 
@@ -10,7 +10,7 @@ Self-hosted, privacy-focused tracker for your physical book, manga, and comic co
 
 ## What it does
 
-- **Self-hosted, always.** Runs on your own infrastructure in Docker or Kubernetes. No telemetry. No external data calls unless you explicitly ask for a metadata lookup.
+- **Self-hosted, always.** Runs on your own infrastructure in Docker or Kubernetes. Telemetry is opt-in and off by default. No external data calls unless you explicitly ask for a metadata lookup.
 - **Multi-library, multi-user.** One instance hosts independent libraries (shared household, personal collection, tech manuals) with per-library roles.
 - **Print-first catalog.** FRBR-style work/edition model covers physical books, manga, comics, magazines, and technical documents without schema gymnastics.
 - **Barcode scanning.** Scan an ISBN at the bookstore from the iOS app — instantly see whether you already own it, or add it to any of your libraries.
