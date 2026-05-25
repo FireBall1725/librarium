@@ -12,12 +12,12 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.2",
-    "@tailwindcss/vite": "^4.1.18",
+    "@tailwindcss/vite": "^4.3.0",
     "astro": "^5.14.0",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.8",
+    "@astrojs/check": "^0.9.9",
     "typescript": "^5.9.3"
   }
 }
