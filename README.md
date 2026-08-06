@@ -54,3 +54,9 @@ npm run build    # static build to dist/
 ## License
 
 AGPL 3.0, matching the component repos.
+
+## Who builds this
+
+Created and maintained by [FireBall1725](https://fireball1725.ca) in Ontario, Canada. More projects and writing there, including [why Librarium exists](https://fireball1725.ca/blog/why-i-wrote-librarium).
+
+Patches welcome; see [CONTRIBUTING.md](./CONTRIBUTING.md). Everyone who has landed code is on the [contributors list](https://github.com/fireball1725/librarium/graphs/contributors).
