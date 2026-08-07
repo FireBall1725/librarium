@@ -1,0 +1,132 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { roadmap, STATUS_LABELS, type Status } from '../data/roadmap';
+
+const ORDER: Status[] = ['shipping-next', 'on-deck', 'exploring', 'not-planning'];
+
+const STATUS_STYLES: Record<Status, { dot: string; text: string; blurb: string }> = {
+  'shipping-next': { dot: 'bg-emerald-400', text: 'text-emerald-300', blurb: 'Being built now.' },
+  'on-deck': { dot: 'bg-amber-400', text: 'text-amber-300', blurb: 'Queued up, not started.' },
+  exploring: { dot: 'bg-slate-500', text: 'text-slate-400', blurb: 'Wanted, no date, may change shape.' },
+  'not-planning': { dot: 'bg-slate-700', text: 'text-slate-500', blurb: "Asked about often enough to be worth answering. These aren't happening." },
+};
+
+const AREA_LABELS: Record<string, string> = {
+  api: 'api', web: 'web', ios: 'ios', mcp: 'mcp', product: 'product',
+};
+
+const groups = ORDER.map((status) => ({
+  status,
+  label: STATUS_LABELS[status],
+  ...STATUS_STYLES[status],
+  items: roadmap.filter((i) => i.status === status),
+})).filter((g) => g.items.length > 0);
+
+// ── Recently shipped ────────────────────────────────────────────────────
+// Fetched at BUILD time, not in the browser, so crawlers and no-JS visitors
+// see real versions. GITHUB_TOKEN is passed in by the deploy workflow:
+// unauthenticated calls are 60/hr per IP and Actions runners share addresses.
+//
+// A failure here must never break the build. The site going down because
+// GitHub had a bad minute would be a poor trade for a version string.
+const REPOS = ['librarium-api', 'librarium-web', 'librarium-ios', 'librarium-mcp'];
+const token = import.meta.env.GITHUB_TOKEN ?? process.env.GITHUB_TOKEN;
+
+type Shipped = { repo: string; tag: string; url: string; date: string };
+
+const shipped: Shipped[] = (
+  await Promise.all(
+    REPOS.map(async (repo): Promise<Shipped | null> => {
+      try {
+        const res = await fetch(`https://api.github.com/repos/fireball1725/${repo}/releases/latest`, {
+          headers: {
+            Accept: 'application/vnd.github+json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+        if (!res.ok) return null;
+        const d = await res.json();
+        if (!d?.tag_name) return null;
+        return { repo, tag: d.tag_name, url: d.html_url, date: d.published_at };
+      } catch {
+        return null;
+      }
+    })
+  )
+).filter((r): r is Shipped => r !== null)
+ .sort((a, b) => (a.date < b.date ? 1 : -1));
+
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' });
+---
+
+<Layout
+  title="Roadmap — Librarium"
+  description="What's being built in Librarium, what's queued, what's being explored, and what isn't happening."
+>
+  <SiteHeader />
+
+  <section class="border-b border-slate-800">
+    <div class="mx-auto max-w-6xl px-6 py-20">
+      <p class="text-sm font-semibold tracking-widest text-indigo-300 uppercase">Roadmap</p>
+      <h1 class="mt-2 text-4xl font-bold tracking-tight text-white sm:text-5xl">What's next.</h1>
+      <p class="mt-4 max-w-2xl text-slate-300">
+        Solo project, so these are intentions rather than promises, and things move between groups as
+        priorities shift. If something you want isn't
+        here, <a href="https://github.com/fireball1725/librarium/issues" rel="noopener" class="text-indigo-300 underline decoration-indigo-500/40 underline-offset-4 hover:text-indigo-200">open an issue</a>
+        or say so in <a href="https://discord.gg/QpV82CFfVD" rel="noopener" class="text-indigo-300 underline decoration-indigo-500/40 underline-offset-4 hover:text-indigo-200">Discord</a>.
+      </p>
+
+      {shipped.length > 0 && (
+        <div class="mt-10 rounded-lg border border-slate-800 bg-slate-900/40 p-5">
+          <p class="text-xs font-semibold tracking-widest text-slate-400 uppercase">Recently shipped</p>
+          <div class="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            {shipped.map((r) => (
+              <a href={r.url} rel="noopener" class="group flex items-center gap-2">
+                <span class="font-mono text-slate-300 group-hover:text-white">{r.repo}</span>
+                <span class="rounded-full bg-slate-800/80 px-2 py-0.5 font-mono text-xs text-emerald-300">{r.tag}</span>
+                <span class="text-xs text-slate-500">{fmtDate(r.date)}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section>
+    <div class="mx-auto max-w-6xl space-y-16 px-6 py-20">
+      {groups.map((g) => (
+        <div>
+          <h2 class:list={['flex items-center gap-2 text-sm font-semibold tracking-widest uppercase', g.text]}>
+            <span class:list={['h-1.5 w-1.5 rounded-full', g.dot]}></span>
+            {g.label}
+          </h2>
+          <p class="mt-2 text-sm text-slate-500">{g.blurb}</p>
+
+          <ul class="mt-6 grid gap-4 sm:grid-cols-2">
+            {g.items.map((item) => (
+              <li class="rounded-lg border border-slate-800 bg-slate-900/40 p-5">
+                <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <h3 class="font-semibold text-white">{item.title}</h3>
+                  <span class="flex gap-1.5">
+                    {item.areas.map((a) => (
+                      <span class="rounded bg-slate-800/80 px-1.5 py-0.5 font-mono text-[11px] text-slate-400">
+                        {AREA_LABELS[a] ?? a}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+                {item.blurb && <p class="mt-2 text-sm text-slate-300">{item.blurb}</p>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <SiteFooter />
+</Layout>

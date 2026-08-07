@@ -1,5 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { roadmap as roadmapItems, HOMEPAGE_STATUSES, STATUS_LABELS } from '../data/roadmap';
 
 const base = import.meta.env.BASE_URL;
 const asset = (path: string) => `${base.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
@@ -101,145 +104,28 @@ const faqs = [
   },
   {
     q: 'Can I import my Goodreads, StoryGraph, or Libib library?',
-    a: 'CSV import from Goodreads, StoryGraph, and Libib is on the 26.5 roadmap. Once shipped, you drop in the export from any of those services and Librarium will hydrate the catalog with metadata and covers from your configured providers.',
+    a: 'CSV import from Goodreads, StoryGraph, and Libib is on deck; see the roadmap. Once shipped, you drop in the export from any of those services and Librarium will hydrate the catalog with metadata and covers from your configured providers.',
   },
 ];
 
-const roadmap = [
-  {
-    status: 'Shipping next',
-    headerClass: 'text-emerald-300',
-    dotClass: 'bg-emerald-400',
-    items: [
-      'iOS app redesign',
-      'Lite mode for iOS',
-      'Sync protocol (per-field timestamps, delta API)',
-      'App Store launch',
-    ],
-  },
-  {
-    status: 'On deck',
-    headerClass: 'text-amber-300',
-    dotClass: 'bg-amber-400',
-    items: [
-      'CSV import (Goodreads, StoryGraph, Libib)',
-      'Bookstore links',
-      'Opt-in telemetry SDK',
-      'One-click cloud deploy templates',
-      'Series rework',
-    ],
-  },
-  {
-    status: 'Exploring',
-    headerClass: 'text-slate-400',
-    dotClass: 'bg-slate-500',
-    items: [
-      'iPad and Mac apps',
-      'Shared reading feed (household scope)',
-      'AI metadata enrichment',
-      'Library invite links',
-      'Bulk select on books grid',
-    ],
-  },
-];
+// Condensed view of src/data/roadmap.ts — titles only, three columns, and
+// not-planning left off. The full list with blurbs and issue links lives at
+// /roadmap. One data file, so the two can't drift.
+const columnStyles = {
+  'shipping-next': { headerClass: 'text-emerald-300', dotClass: 'bg-emerald-400' },
+  'on-deck': { headerClass: 'text-amber-300', dotClass: 'bg-amber-400' },
+  exploring: { headerClass: 'text-slate-400', dotClass: 'bg-slate-500' },
+} as const;
+
+const roadmap = HOMEPAGE_STATUSES.map((status) => ({
+  status: STATUS_LABELS[status],
+  ...columnStyles[status as keyof typeof columnStyles],
+  items: roadmapItems.filter((i) => i.status === status).map((i) => i.title),
+}));
 ---
 
 <Layout>
-  <!-- Top nav -->
-  <nav class="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
-    <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-      <a href={base} class="flex items-center gap-2.5">
-        <img
-          src={asset('logo-192.png')}
-          alt=""
-          width="32"
-          height="32"
-          class="h-8 w-8"
-        />
-        <span class="text-lg font-semibold tracking-tight text-white">Librarium</span>
-      </a>
-
-      <!-- Desktop links -->
-      <div class="hidden items-center gap-6 text-sm md:flex">
-        <a href="#editions" class="text-slate-300 transition hover:text-white">Editions</a>
-        <a href="#compare" class="text-slate-300 transition hover:text-white">Compare</a>
-        <a href="#screenshots" class="text-slate-300 transition hover:text-white">Screenshots</a>
-        <a href="#faq" class="text-slate-300 transition hover:text-white">FAQ</a>
-        <a href="#roadmap" class="text-slate-300 transition hover:text-white">Roadmap</a>
-        <a
-          href="https://fireball1725.github.io/librarium-api/"
-          rel="noopener"
-          class="text-slate-300 transition hover:text-white"
-        >
-          API docs
-        </a>
-        <a
-          href="https://github.com/fireball1725/librarium"
-          rel="noopener"
-          class="text-slate-300 transition hover:text-white"
-        >
-          GitHub
-        </a>
-      </div>
-
-      <!-- Mobile hamburger -->
-      <button
-        type="button"
-        data-mobile-nav-toggle
-        aria-label="Open menu"
-        aria-expanded="false"
-        aria-controls="mobile-nav"
-        class="inline-flex h-10 w-10 items-center justify-center rounded-md border border-slate-800 text-slate-300 transition hover:border-slate-600 hover:text-white md:hidden"
-      >
-        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-menu-icon>
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="18" x2="21" y2="18" />
-        </svg>
-        <svg class="hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-close-icon>
-          <line x1="6" y1="6" x2="18" y2="18" />
-          <line x1="18" y1="6" x2="6" y2="18" />
-        </svg>
-      </button>
-    </div>
-
-    <!-- Mobile menu panel -->
-    <div id="mobile-nav" class="hidden border-t border-slate-800 bg-slate-950/95 backdrop-blur md:hidden" data-mobile-nav>
-      <div class="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-3 text-sm">
-        <a href="#editions" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">Editions</a>
-        <a href="#compare" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">Compare</a>
-        <a href="#screenshots" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">Screenshots</a>
-        <a href="#faq" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">FAQ</a>
-        <a href="#roadmap" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">Roadmap</a>
-        <a href="https://fireball1725.github.io/librarium-api/" rel="noopener" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">API docs</a>
-        <a href="https://github.com/fireball1725/librarium" rel="noopener" class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white">GitHub</a>
-      </div>
-    </div>
-
-    <script>
-      // Mobile nav toggle — hamburger swaps with an X, menu panel shows/hides.
-      // Tapping any link inside the panel auto-closes it so the anchor scroll
-      // lands on content, not on the still-open menu.
-      const toggle = document.querySelector<HTMLButtonElement>('[data-mobile-nav-toggle]');
-      const panel = document.querySelector<HTMLElement>('[data-mobile-nav]');
-      const openIcon = toggle?.querySelector<SVGElement>('[data-menu-icon]');
-      const closeIcon = toggle?.querySelector<SVGElement>('[data-close-icon]');
-      if (toggle && panel && openIcon && closeIcon) {
-        const setOpen = (open: boolean) => {
-          panel.classList.toggle('hidden', !open);
-          openIcon.classList.toggle('hidden', open);
-          closeIcon.classList.toggle('hidden', !open);
-          toggle.setAttribute('aria-expanded', String(open));
-        };
-        toggle.addEventListener('click', () => {
-          setOpen(panel.classList.contains('hidden'));
-        });
-        panel.querySelectorAll('a').forEach(a =>
-          a.addEventListener('click', () => setOpen(false))
-        );
-      }
-    </script>
-  </nav>
+  <SiteHeader />
 
   <!-- Hero -->
   <header class="relative overflow-hidden border-b border-slate-800">
@@ -1187,24 +1073,5 @@ const roadmap = [
     }
   </script>
 
-  <!-- Footer -->
-  <footer class="border-t border-slate-800">
-    <div
-      class="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-6 py-10 sm:flex-row sm:items-center"
-    >
-      <p class="text-sm text-slate-400">
-        © {new Date().getFullYear()} Librarium · AGPL 3.0 licensed · built by <a
-          href="https://fireball1725.ca"
-          rel="noopener"
-          class="text-slate-300 underline decoration-slate-700 underline-offset-4 hover:text-white hover:decoration-slate-400"
-          >FireBall1725</a
-        >
-      </p>
-      <div class="flex gap-6 text-sm text-slate-400">
-        <a href="https://github.com/fireball1725/librarium" rel="noopener" class="hover:text-white">GitHub</a>
-        <a href="https://github.com/fireball1725/librarium/issues" rel="noopener" class="hover:text-white">Issues</a>
-        <a href="https://discord.gg/QpV82CFfVD" rel="noopener" class="hover:text-white">Discord</a>
-      </div>
-    </div>
-  </footer>
+  <SiteFooter />
 </Layout>

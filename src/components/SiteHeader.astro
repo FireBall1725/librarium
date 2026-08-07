@@ -1,0 +1,102 @@
+---
+// Shared top nav. Lifted out of index.astro when /roadmap was added, so the
+// two pages cannot drift apart.
+//
+// Section links are root-relative (`/#faq`, not `#faq`) so they work from any
+// page. On the homepage the browser treats them as a same-document jump; from
+// /roadmap they navigate home and then scroll.
+const base = import.meta.env.BASE_URL;
+const asset = (path: string) => `${base.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
+const home = base.replace(/\/$/, '') || '/';
+
+const links = [
+  { href: `${home}/#editions`.replace('//#', '/#'), label: 'Editions' },
+  { href: `${home}/#compare`.replace('//#', '/#'), label: 'Compare' },
+  { href: `${home}/#screenshots`.replace('//#', '/#'), label: 'Screenshots' },
+  { href: `${home}/#faq`.replace('//#', '/#'), label: 'FAQ' },
+  { href: `${home}/roadmap`.replace(/\/\/roadmap$/, '/roadmap'), label: 'Roadmap' },
+  { href: 'https://fireball1725.github.io/librarium-api/', label: 'API docs', external: true },
+  { href: 'https://github.com/fireball1725/librarium', label: 'GitHub', external: true },
+];
+---
+
+<nav class="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    <a href={base} class="flex items-center gap-2.5">
+      <img src={asset('logo-192.png')} alt="" width="32" height="32" class="h-8 w-8" />
+      <span class="text-lg font-semibold tracking-tight text-white">Librarium</span>
+    </a>
+
+    <!-- Desktop links -->
+    <div class="hidden items-center gap-6 text-sm md:flex">
+      {links.map((l) => (
+        <a
+          href={l.href}
+          rel={l.external ? 'noopener' : undefined}
+          class="text-slate-300 transition hover:text-white"
+        >
+          {l.label}
+        </a>
+      ))}
+    </div>
+
+    <!-- Mobile hamburger -->
+    <button
+      type="button"
+      data-mobile-nav-toggle
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+      class="inline-flex h-10 w-10 items-center justify-center rounded-md border border-slate-800 text-slate-300 transition hover:border-slate-600 hover:text-white md:hidden"
+    >
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-menu-icon>
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
+      <svg class="hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-close-icon>
+        <line x1="6" y1="6" x2="18" y2="18" />
+        <line x1="18" y1="6" x2="6" y2="18" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile menu panel -->
+  <div id="mobile-nav" class="hidden border-t border-slate-800 bg-slate-950/95 backdrop-blur md:hidden" data-mobile-nav>
+    <div class="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-3 text-sm">
+      {links.map((l) => (
+        <a
+          href={l.href}
+          rel={l.external ? 'noopener' : undefined}
+          class="rounded px-2 py-2 text-slate-300 transition hover:bg-slate-900 hover:text-white"
+        >
+          {l.label}
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <script>
+    // Mobile nav toggle — hamburger swaps with an X, menu panel shows/hides.
+    // Tapping any link inside the panel auto-closes it so the anchor scroll
+    // lands on content, not on the still-open menu.
+    const toggle = document.querySelector<HTMLButtonElement>('[data-mobile-nav-toggle]');
+    const panel = document.querySelector<HTMLElement>('[data-mobile-nav]');
+    const openIcon = toggle?.querySelector<SVGElement>('[data-menu-icon]');
+    const closeIcon = toggle?.querySelector<SVGElement>('[data-close-icon]');
+    if (toggle && panel && openIcon && closeIcon) {
+      const setOpen = (open: boolean) => {
+        panel.classList.toggle('hidden', !open);
+        openIcon.classList.toggle('hidden', open);
+        closeIcon.classList.toggle('hidden', !open);
+        toggle.setAttribute('aria-expanded', String(open));
+      };
+      toggle.addEventListener('click', () => {
+        setOpen(panel.classList.contains('hidden'));
+      });
+      panel.querySelectorAll('a').forEach(a =>
+        a.addEventListener('click', () => setOpen(false))
+      );
+    }
+  </script>
+</nav>
