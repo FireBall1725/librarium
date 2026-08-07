@@ -4,7 +4,7 @@ Self-hosted, privacy-focused tracker for your physical book, manga, and comic co
 
 > ⚠︎ **Early beta.** Things are changing fast, some edges are rough, and self-hosters should expect to read release notes before upgrading.
 
-[librarium.press](https://librarium.press) · [API docs](https://fireball1725.github.io/librarium-api/)
+[librarium.press](https://librarium.press) · [API docs](https://fireball1725.github.io/librarium-api/) · [Discord](https://discord.gg/QpV82CFfVD)
 
 ---
 
