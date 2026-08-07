@@ -4,6 +4,13 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # The roadmap page fetches the latest release of each component repo at
+  # build time. Those repos ship on their own cadence and can't trigger a
+  # build here (GITHUB_TOKEN is scoped to its own repo, so cross-repo
+  # dispatch would need a PAT in four places). A nightly rebuild keeps the
+  # "Recently shipped" strip current within a day, with nothing to rotate.
+  schedule:
+    - cron: '17 6 * * *'
 
 permissions:
   contents: read
@@ -29,6 +36,12 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          # Lets the roadmap page's build-time release lookups use the
+          # authenticated rate limit. Unauthenticated is 60/hr per IP and
+          # Actions runners share addresses. The build tolerates a failure
+          # here: the shipped strip just disappears.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/upload-pages-artifact@v3
         with:
