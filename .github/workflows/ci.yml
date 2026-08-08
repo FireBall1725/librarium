@@ -1,34 +1,17 @@
-# PR-time validation for the marketing site. Distinct from deploy.yml,
-# which only fires on push to main and pushes the built bundle to
-# GitHub Pages — this workflow runs on every PR (and every push to
-# main, as a safety net) so a broken Astro build or a TypeScript
-# regression in the layout / config / structured-data fails review
-# before it ever reaches the deploy step.
 name: CI
+
+# The jobs live in FireBall1725/workflows. This site does not version and does
+# not release: merging to main is shipping, so CI is the only gate.
 
 on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "npm"
-
-      - run: npm ci
-
-      # `astro check` runs the @astrojs/check type pass over .astro and
-      # .ts files plus the config. Catches things `astro build` doesn't
-      # — wrong prop types, structured-data shape errors, missing
-      # imports — without spinning up the full Vite build.
-      - run: npm run check
-
-      - run: npm run build
+  ci:
+    uses: FireBall1725/workflows/.github/workflows/ci-astro.yml@v1

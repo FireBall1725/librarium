@@ -1,0 +1,28 @@
+{
+  "_comment": "Go is excluded because gofmt owns it and is gated separately in ci-go.yml. This checker cannot see inside a raw string literal, so it reads a space-indented HTML template in a handler, or fixtures in a _test.go, as wrong indentation: 60 such findings on firebin-api, every one inside a string.",
+  "Exclude": [
+    "\\.go$",
+    "^vendor/",
+    "^node_modules/",
+    "^\\.build/",
+    "^dist/",
+    "^docs/swagger\\.",
+    "^docs/docs\\.go$",
+    "Package\\.resolved$",
+    "package-lock\\.json$",
+    "\\.generated\\.swift$",
+    "\\.min\\.(js|css)$",
+    "\\.(png|jpg|jpeg|gif|ico|icns|pdf|woff2?|ttf|dmg|zip)$"
+  ],
+  "Verbose": false,
+  "IgnoreDefaults": false,
+  "SpacesAfterTabs": false,
+  "_comment_indentation": "Indentation is off because the rule is 'left padding must be a multiple of indent_size', which fires on ANY aligned continuation line rather than on genuinely wrong indentation. It flagged, in order: Go raw string literals, Markdown ordered-list nesting, SQL keyword alignment, a vendored glabels XML catalogue, a Helm comment block, CSS comment continuations, and a generated 4-space JSON manifest. Every one was formatted correctly. Indentation is enforced where it can be enforced honestly: gofmt for Go, eslint for TS, ruff for Python, swift-format for Swift. The .editorconfig still declares it, which is what editors read.",
+  "Disable": {
+    "EndOfLine": false,
+    "Indentation": true,
+    "InsertFinalNewline": false,
+    "TrimTrailingWhitespace": false,
+    "MaxLineLength": true
+  }
+}
