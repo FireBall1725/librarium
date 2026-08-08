@@ -1,0 +1,68 @@
+; Shared across every FireBall1725 repo. Copied in by scaffold.sh; do not
+; hand-edit a copy. Change it here and re-run the script.
+;
+; Enforced in CI by editorconfig-checker, which is the reason this file is a
+; gate and not a suggestion. Language formatters (gofmt, swift-format, ruff)
+; own the files they know about; this covers everything they don't.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# gofmt writes tabs and is not configurable. indent_size here is display
+# width only; it does not change a single byte on disk.
+[*.go]
+indent_style = tab
+indent_size = 4
+
+[*.{py,pyi}]
+indent_size = 4
+
+[Makefile]
+indent_style = tab
+
+# SQL indents continuation lines to align under keywords, so a WHERE clause
+# sits at 5 spaces and its AND at 7. That is alignment, not indentation, and
+# demanding multiples of two mangles it. Trailing whitespace and the final
+# newline are still checked.
+[*.sql]
+indent_size = unset
+
+# Helm templates indent to shape their rendered YAML, and their comment blocks
+# align continuation lines under prose. Neither lands on a multiple of two.
+[*.tpl]
+indent_size = unset
+
+# Two trailing spaces are a hard line break in Markdown, and indentation is
+# structural: content nested under "1. " is indented three spaces, which is
+# correct and is not a multiple of two. Leaving indent_size set here fails every
+# README that contains a fenced block inside a numbered list.
+[*.md]
+trim_trailing_whitespace = false
+indent_size = unset
+indent_style = unset
+
+# Files whose bytes belong to a tool, not to us. Xcode rewrites pbxproj on
+# every project change and will happily undo anything done here, and the XML in
+# these repos is vendored or generated data (glabels label catalogues, the
+# Sparkle appcast) rather than anything anyone formats by hand.
+[{*.pbxproj,*.xcscheme,*.plist,*.xml}]
+indent_style = unset
+indent_size = unset
+trim_trailing_whitespace = false
+insert_final_newline = unset
+
+# Whitespace is load-bearing in a diff.
+[*.{patch,diff}]
+trim_trailing_whitespace = false
+insert_final_newline = unset
+
+[LICENSE]
+indent_style = unset
+indent_size = unset
