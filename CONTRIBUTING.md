@@ -9,6 +9,8 @@ Thanks for your interest. This umbrella repo holds the marketing site at [librar
 
 Each component repo has its own `CONTRIBUTING.md` covering build, test, and conventions for that stack.
 
+Using an AI coding agent? [AGENTS.md](./AGENTS.md) has the architecture, the build and test loop, and the conventions it needs. Point your tool at it, and review what it writes before you open the PR.
+
 ## What goes in this repo
 
 - Marketing site copy + design changes (Astro + Tailwind v4)
