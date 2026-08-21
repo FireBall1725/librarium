@@ -51,6 +51,12 @@ npm run dev      # local preview on :4321
 npm run build    # static build to dist/
 ```
 
+## Support
+
+Questions, updates, and works in progress: [FireBall Codes on Discord](https://discord.gg/QpV82CFfVD).
+
+If this saved you some time, you can [buy me a sushi roll](https://ko-fi.com/fireball1725).
+
 ## License
 
 AGPL 3.0, matching the component repos.
