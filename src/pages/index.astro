@@ -55,12 +55,114 @@ const features = [
   },
 ];
 
-const webShots = [
-  { src: asset('screenshots/web/dashboard.webp'), alt: 'Librarium web dashboard' },
-  { src: asset('screenshots/web/books_grid.webp'), alt: 'Books grid view' },
-  { src: asset('screenshots/web/books_list.webp'), alt: 'Books list view' },
-  { src: asset('screenshots/web/contributors.webp'), alt: 'Contributors page' },
+// Every web shot is captured twice, same filename under dark/ and light/, so
+// the theme switch below is a src swap and never reflows the carousel. Add or
+// reorder entries here and both themes follow; the file must exist in both.
+//
+// Ordered as a walk through the product rather than by screen: browse, find,
+// open one book, follow its series, then the parts that keep a catalog fed and
+// tidy. Reorder freely, but keep that arc in mind, because autoplay means most
+// visitors see the front of this list and not the back.
+//
+// `title` and `note` are the visible caption; `alt` describes the picture for
+// anyone who cannot see it. Keep them doing those two different jobs rather
+// than copying one into the other, or screen readers hear the same sentence
+// twice. No counts from the instance these were shot on: a number on this page
+// reads as a product claim.
+const webShotNames = [
+  {
+    file: 'books-grid',
+    title: 'Browse by cover',
+    note: 'Narrow by shelf, library, list, read status or rating without leaving the grid.',
+    alt: 'The book catalog as a cover grid, with filters for ownership, library, read status and rating',
+  },
+  {
+    file: 'books-rows',
+    title: 'Or by row',
+    note: 'The same filters against a dense list, for when you want dates and formats at a glance.',
+    alt: 'The same catalog as a dense list, showing year, format and read status per row',
+  },
+  {
+    file: 'global-search',
+    title: 'One search box',
+    note: 'Books and the people who made them come back together, from anywhere in the app.',
+    alt: 'Searching the whole instance from one box, with books and authors in the same result list',
+  },
+  {
+    file: 'book-detail',
+    title: 'The book itself',
+    note: 'Description, contributors, reading status, and the lists it sits on.',
+    alt: 'A single book with its cover, description, author, reading status and the lists it belongs to',
+  },
+  {
+    file: 'editions-copies',
+    title: 'Work, edition, copy',
+    note: 'A hardback and a paperback are two editions of one book, and every copy tracks its own condition.',
+    alt: 'One book expanded into its editions and physical copies, with ISBNs, format and condition',
+  },
+  {
+    file: 'series-grid',
+    title: 'Series at a glance',
+    note: 'Each run shows how much of it is on your shelf, and how much is not.',
+    alt: 'Series cards showing how many volumes of each run are owned, and how many are missing',
+  },
+  {
+    file: 'series-detail',
+    title: 'Down to the volume',
+    note: 'Volumes in order with the gaps greyed out, so you know what to hunt for.',
+    alt: 'A single series with its volumes numbered in order, owned ones sharp and missing ones greyed out',
+  },
+  {
+    file: 'authors',
+    title: 'Everyone who worked on it',
+    note: 'Authors, illustrators and translators are tracked apart, not flattened into one credit.',
+    alt: 'Contributors across the shelves, each with a book count and covers, split by author, illustrator and translator',
+  },
+  {
+    file: 'ai-suggestions',
+    title: 'Suggestions, if you want them',
+    note: 'Off by default. Runs against your own Ollama instance or your own OpenAI or Anthropic key.',
+    alt: 'AI book recommendations split into what to read next and what to buy',
+  },
+  {
+    file: 'isbn-lookup',
+    title: 'Add by ISBN',
+    note: 'Providers fill what they can, and tell you how much of the record they filled.',
+    alt: 'Adding a book by ISBN, showing the matched result and how many fields the provider filled',
+  },
+  {
+    file: 'bulk-edit',
+    title: 'Fix many at once',
+    note: 'Select a range, then set type, genres, tags or lists, or send them all back for fresh metadata.',
+    alt: 'Several books selected at once, with actions to set type, genre, tags, lists and refresh their metadata',
+  },
+  {
+    file: 'metadata-providers',
+    title: 'Your sources, your order',
+    note: 'Providers are tried in priority order, and any of them can be switched off.',
+    alt: 'Metadata providers in priority order, each toggled on or off with its own API key',
+  },
+  {
+    file: 'scheduled-jobs',
+    title: 'Work that runs itself',
+    note: 'Cover backfills, metadata refreshes and AI runs, on a cron you control.',
+    alt: 'Background jobs on a cron schedule, with the next run time and a switch for each',
+  },
+  {
+    file: 'themes',
+    title: 'Five themes',
+    note: 'Plus an OpenDyslexic typeface, and the interface in your own language.',
+    alt: 'Appearance settings with five themes, an OpenDyslexic typeface option and interface language',
+  },
 ];
+
+const webShots = webShotNames.map(({ file, title, note, alt }) => ({
+  dark: asset(`screenshots/web/dark/${file}.webp`),
+  light: asset(`screenshots/web/light/${file}.webp`),
+  title,
+  note,
+  alt,
+}));
 
 const iosShots = [
   { src: asset('screenshots/ios/library_catalogue.webp'), alt: 'iOS library catalogue' },
@@ -754,10 +856,47 @@ const roadmap = HOMEPAGE_STATUSES.map((status) => ({
       <p class="text-sm font-semibold tracking-widest text-indigo-300 uppercase">
         Web
       </p>
-      <h2 class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-        Browse, search, and curate from any browser.
-      </h2>
-      <div class="relative mt-12" data-carousel-root>
+      <div class="mt-2 flex flex-wrap items-end justify-between gap-6">
+        <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          Browse, search, and curate from any browser.
+        </h2>
+
+        <!--
+          Theme switch for the shots below. This is NOT a site theme toggle;
+          it only swaps which capture each <figure> shows, so the label says
+          so out loud for anyone arriving via the a11y tree. Dark is the
+          default because the site itself is dark and the light captures
+          would otherwise punch a white rectangle into the page.
+        -->
+        <div
+          class="flex items-center gap-3"
+          role="group"
+          aria-label="Screenshot theme"
+          data-shot-theme-switch
+        >
+          <span class="text-sm text-slate-400" aria-hidden="true">Shown in</span>
+          <div class="flex rounded-full border border-slate-700 bg-slate-950 p-1">
+            <button
+              type="button"
+              data-shot-theme="dark"
+              aria-pressed="true"
+              class="rounded-full px-4 py-1.5 text-sm font-medium text-slate-400 transition hover:text-white aria-pressed:bg-indigo-500 aria-pressed:text-white"
+            >
+              Dark
+            </button>
+            <button
+              type="button"
+              data-shot-theme="light"
+              aria-pressed="false"
+              class="rounded-full px-4 py-1.5 text-sm font-medium text-slate-400 transition hover:text-white aria-pressed:bg-indigo-500 aria-pressed:text-white"
+            >
+              Light
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative mt-12" data-carousel-root data-carousel-interval="6000">
         <div
           class="flex snap-x snap-mandatory overflow-x-auto scroll-smooth rounded-lg [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           data-carousel-track
@@ -765,11 +904,20 @@ const roadmap = HOMEPAGE_STATUSES.map((status) => ({
           {webShots.map((shot) => (
             <figure class="w-full flex-shrink-0 snap-center overflow-hidden rounded-lg border border-slate-800 bg-slate-950 shadow-xl">
               <img
-                src={shot.src}
+                src={shot.dark}
+                data-shot-dark={shot.dark}
+                data-shot-light={shot.light}
                 alt={shot.alt}
+                width="1512"
+                height="807"
                 loading="lazy"
+                decoding="async"
                 class="h-auto w-full"
               />
+              <figcaption class="border-t border-slate-800 px-5 py-4 sm:px-6">
+                <p class="text-sm font-semibold text-white">{shot.title}</p>
+                <p class="mt-1 text-sm leading-relaxed text-slate-400">{shot.note}</p>
+              </figcaption>
             </figure>
           ))}
         </div>
@@ -873,6 +1021,81 @@ const roadmap = HOMEPAGE_STATUSES.map((status) => ({
   </section>
 
   <script>
+    // Screenshot theme switch. Swaps the src of every shot in place, which
+    // keeps each <figure> in the same slot so the carousel's scroll position
+    // and slide index survive the switch untouched.
+    //
+    // Both themes are warmed a whole set at a time rather than per image.
+    // `loading="lazy"` only fetches a slide once it scrolls into view, but the
+    // carousel scrolls HORIZONTALLY on autoplay, which the lazy heuristic does
+    // not anticipate; left alone it advances onto slides whose image has not
+    // started loading and shows an empty frame. Warming the dark set as the
+    // section approaches fixes that without putting the images on the critical
+    // path, and the light set stays unfetched until someone asks for it.
+    {
+      const section = document.querySelector<HTMLElement>('#screenshots');
+      const group = document.querySelector<HTMLElement>('[data-shot-theme-switch]');
+      const shots = Array.from(
+        document.querySelectorAll<HTMLImageElement>('img[data-shot-dark]')
+      );
+
+      if (section && group && shots.length > 0) {
+        const buttons = Array.from(
+          group.querySelectorAll<HTMLButtonElement>('[data-shot-theme]')
+        );
+        const warmed = new Set<string>();
+
+        // Light shots are not in the markup, so they are warmed through the
+        // cache and land instantly when someone switches.
+        const warm = (theme: string) => {
+          if (warmed.has(theme)) return;
+          warmed.add(theme);
+          for (const img of shots) {
+            const href = theme === 'light' ? img.dataset.shotLight : img.dataset.shotDark;
+            if (href) new Image().src = href;
+          }
+        };
+
+        // Dark shots ARE the markup, so warming the cache is not enough: each
+        // <img> still defers its own fetch until it scrolls in. Flipping them
+        // to eager makes all eight load together once the section is close.
+        const loadDarkNow = () => {
+          warmed.add('dark');
+          for (const img of shots) img.loading = 'eager';
+        };
+
+        // Fire once the section is within a screen of the viewport. A passive
+        // scroll listener doing a rect check is enough here and costs less
+        // thought than an IntersectionObserver; it also unhooks itself the
+        // moment it has done its one job.
+        const maybeLoadDark = () => {
+          if (warmed.has('dark')) return;
+          if (section.getBoundingClientRect().top > window.innerHeight + 800) return;
+          loadDarkNow();
+          window.removeEventListener('scroll', maybeLoadDark);
+        };
+        window.addEventListener('scroll', maybeLoadDark, { passive: true });
+        maybeLoadDark();
+
+        const apply = (theme: string) => {
+          warm(theme);
+          for (const img of shots) {
+            const href = theme === 'light' ? img.dataset.shotLight : img.dataset.shotDark;
+            if (href) img.src = href;
+          }
+          for (const b of buttons) {
+            b.setAttribute('aria-pressed', String(b.dataset.shotTheme === theme));
+          }
+        };
+
+        for (const b of buttons) {
+          b.addEventListener('click', () => apply(b.dataset.shotTheme ?? 'dark'));
+        }
+      }
+    }
+  </script>
+
+  <script>
     // Shared carousel behaviour — picks up every `[data-carousel-root]`
     // on the page and wires its track/prev/next/dots. Handles autoplay,
     // hover/focus pause, scroll-sync, and reduced-motion.
@@ -887,7 +1110,10 @@ const roadmap = HOMEPAGE_STATUSES.map((status) => ({
       const prev = root.querySelector<HTMLButtonElement>('[data-carousel-prev]');
       const next = root.querySelector<HTMLButtonElement>('[data-carousel-next]');
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const INTERVAL = 5000;
+      // Per-carousel so each deck sets its own pace. The web shots carry a
+      // caption to read as well as a screenshot to take in, so they sit longer
+      // than the iOS pair, which falls through to the shared default.
+      const INTERVAL = Number(root.dataset.carouselInterval) || 5000;
       let current = 0;
       let timer: number | undefined;
 
