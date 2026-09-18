@@ -21,3 +21,6 @@ pnpm-debug.log*
 # editors
 .vscode/
 .idea/
+
+# written by scripts/progress-snapshot.mjs at deploy; the real history lives on the progress-data branch
+src/data/progress-history.json

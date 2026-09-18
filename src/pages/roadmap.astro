@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import RoadmapProgress from '../components/RoadmapProgress.astro';
 import { roadmap, STATUS_LABELS, type Status } from '../data/roadmap';
 
 const ORDER: Status[] = ['shipping-next', 'on-deck', 'exploring', 'not-planning'];
@@ -95,6 +96,8 @@ const fmtDate = (iso: string) =>
       )}
     </div>
   </section>
+
+  <RoadmapProgress />
 
   <section>
     <div class="mx-auto max-w-6xl space-y-16 px-6 py-20">
