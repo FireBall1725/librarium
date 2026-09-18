@@ -1,0 +1,223 @@
+---
+// Progress section for /roadmap: live numbers from the Plane board plus a
+// chart built from nightly snapshots. Renders nothing if the board can't be
+// read, so a bad night at Plane never breaks the page.
+import fs from 'node:fs';
+import { fetchBoard, summarize, weekly } from '../lib/progress-core.mjs';
+
+type Area = { name: string; done: number; doing: number; total: number };
+type Item = { title: string; area: string | null; date?: string };
+type Summary = {
+  open: number; doing: number; doneWeek: number; done4w: number;
+  areas: Area[]; doneThisWeek: Item[]; doingNow: Item[];
+};
+type Week = { week: string; open: number; done: number | null; added: number | null };
+
+const key = import.meta.env.PLANE_API_KEY ?? process.env.PLANE_API_KEY;
+let s: Summary | null = null;
+try {
+  s = summarize(await fetchBoard(key)) as Summary;
+} catch {
+  s = null;
+}
+
+// Written by scripts/progress-snapshot.mjs just before the build. Missing in
+// dev and in PR CI, which is fine: the chart explains itself instead.
+let history: { date: string }[] = [];
+try {
+  history = JSON.parse(fs.readFileSync('src/data/progress-history.json', 'utf8'));
+} catch {
+  history = [];
+}
+const weeks = weekly(history) as Week[];
+
+const fmtShort = (iso: string) =>
+  new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+
+// Chart geometry. One scale places the line, the grid and every label.
+const VW = 960, VH = 250, L = 44, R = 20, T = 18, B = 34;
+const PW = VW - L - R, PH = VH - T - B;
+const peak = Math.max(10, ...weeks.map((w) => w.open));
+const step = peak > 150 ? 50 : peak > 60 ? 25 : 10;
+const max = Math.ceil((peak * 1.15) / step) * step;
+const ticks = Array.from({ length: max / step + 1 }, (_, i) => i * step);
+const x = (i: number) => (weeks.length < 2 ? L + PW : L + (i * PW) / (weeks.length - 1));
+const y = (v: number) => T + PH - (v / max) * PH;
+const points = weeks.map((w, i) => `${x(i)},${y(w.open)}`).join(' ');
+const bigAdds = weeks
+  .map((w, i) => ({ i, w }))
+  .filter(({ w }) => (w.added ?? 0) >= 25);
+const last = weeks.length - 1;
+---
+
+{s && (
+  <section class="border-b border-slate-800" aria-labelledby="progress-h">
+    <div class="mx-auto max-w-6xl px-6 py-16">
+      <p class="text-sm font-semibold tracking-widest text-indigo-300 uppercase">Progress</p>
+      <h2 id="progress-h" class="mt-2 text-3xl font-bold tracking-tight text-white">Working through the backlog.</h2>
+      <p class="mt-3 max-w-2xl text-slate-300">
+        Straight from the project board, updated every night. You see what each card is called and where it's at. The details stay on the board.
+      </p>
+
+      <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+          <p class="text-3xl font-bold tabular-nums text-white">{s.open}</p>
+          <p class="text-sm text-slate-400">cards still open</p>
+        </div>
+        <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+          <p class="text-3xl font-bold tabular-nums text-emerald-300">{s.done4w}</p>
+          <p class="text-sm text-slate-400">done in the last 4 weeks</p>
+        </div>
+        <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+          <p class="text-3xl font-bold tabular-nums text-emerald-300">{s.doneWeek}</p>
+          <p class="text-sm text-slate-400">done this week</p>
+        </div>
+        <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+          <p class="text-3xl font-bold tabular-nums text-white">{s.doing}</p>
+          <p class="text-sm text-slate-400">being worked on now</p>
+        </div>
+      </div>
+
+      <div class="mt-4 rounded-lg border border-slate-800 bg-slate-900/40 p-5">
+        <div class="flex flex-wrap items-baseline justify-between gap-2">
+          <h3 class="font-semibold text-white">Open cards, week by week</h3>
+          {weeks.length >= 2 && <span class="text-xs text-slate-500">Hover a week for the details</span>}
+        </div>
+        {weeks.length < 2 ? (
+          <p class="mt-3 text-sm text-slate-400">
+            {weeks.length === 1
+              ? `Tracking started ${fmtShort(history[0].date)}. The chart fills in one week at a time.`
+              : 'Tracking starts with the next nightly update. The chart fills in one week at a time.'}
+          </p>
+        ) : (
+          <div class="relative mt-2" data-progress-chart data-weeks={JSON.stringify(weeks)}>
+            <svg viewBox={`0 0 ${VW} ${VH}`} class="block h-auto w-full overflow-visible" role="img" aria-label={`Open cards per week, from ${weeks[0].open} to ${weeks[last].open}`} tabindex="0">
+              {ticks.map((t) => (
+                <g>
+                  <line x1={L} x2={VW - R} y1={y(t)} y2={y(t)} stroke="#1e293b" stroke-width="1" />
+                  <text x={L - 10} y={y(t) + 4} text-anchor="end" fill="#64748b" font-size="12">{t}</text>
+                </g>
+              ))}
+              {weeks.map((w, i) => (i % 2 === 0 || i === last) && (
+                <text x={x(i)} y={VH - 10} text-anchor="middle" fill="#64748b" font-size="12">{fmtShort(w.week)}</text>
+              ))}
+              <polygon points={`${L},${y(0)} ${points} ${x(last)},${y(0)}`} fill="rgba(129,140,248,.14)" />
+              <polyline points={points} fill="none" stroke="#818cf8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+              {bigAdds.map(({ i, w }) => (
+                <text x={x(i) + 8} y={y(w.open) - 12} fill="#94a3b8" font-size="12">{w.added} cards added</text>
+              ))}
+              <circle cx={x(last)} cy={y(weeks[last].open)} r="5" fill="#818cf8" stroke="#020617" stroke-width="2" />
+              <text x={x(last) - 8} y={y(weeks[last].open) - 12} text-anchor="end" fill="#fff" font-size="13" font-weight="600">{weeks[last].open} open</text>
+              <line data-cross x1="0" x2="0" y1={T} y2={T + PH} stroke="#475569" stroke-width="1" visibility="hidden" />
+              <circle data-hot cx="0" cy="0" r="5" fill="#818cf8" stroke="#020617" stroke-width="2" visibility="hidden" />
+              <rect data-hit x={L} y={T} width={PW} height={PH} fill="transparent" />
+            </svg>
+            <div data-tip hidden class="pointer-events-none absolute -translate-x-1/2 -translate-y-[110%] whitespace-nowrap rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-300 shadow-lg"></div>
+          </div>
+        )}
+      </div>
+
+      <div class="mt-4 grid gap-4 lg:grid-cols-2">
+        <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-5">
+          <p class="text-xs font-semibold tracking-widest text-slate-400 uppercase">By area</p>
+          <div class="mt-4 space-y-4">
+            {s.areas.map((a) => (
+              <div>
+                <div class="flex justify-between gap-3 text-sm">
+                  <span class="font-semibold text-white">{a.name}</span>
+                  <span class="tabular-nums text-slate-400">{a.done} of {a.total} done</span>
+                </div>
+                <div class="mt-1.5 flex h-1.5 gap-0.5 overflow-hidden rounded-full bg-slate-800" role="img" aria-label={`${a.done} done, ${a.doing} in progress, ${a.total - a.done - a.doing} not started`}>
+                  {a.done > 0 && <span class="h-full rounded-l-full bg-emerald-400" style={`width:${(a.done / a.total) * 100}%`}></span>}
+                  {a.doing > 0 && <span class="h-full bg-amber-400" style={`width:${Math.max(1.5, (a.doing / a.total) * 100)}%`}></span>}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div class="mt-4 flex gap-4 text-xs text-slate-400">
+            <span class="flex items-center gap-1.5"><span class="h-1.5 w-2.5 rounded-sm bg-emerald-400"></span>Done</span>
+            <span class="flex items-center gap-1.5"><span class="h-1.5 w-2.5 rounded-sm bg-amber-400"></span>In progress</span>
+            <span class="flex items-center gap-1.5"><span class="h-1.5 w-2.5 rounded-sm bg-slate-800"></span>Not started</span>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-5">
+          <p class="flex items-center gap-2 text-xs font-semibold tracking-widest text-emerald-300 uppercase"><span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>Done this week</p>
+          {s.doneThisWeek.length ? (
+            <ul class="mt-3 divide-y divide-slate-800">
+              {s.doneThisWeek.map((d) => (
+                <li class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 py-2 text-sm">
+                  <span><span class="text-white">{d.title}</span>{d.area && <span class="ml-2 rounded bg-slate-800/80 px-1.5 py-0.5 font-mono text-[11px] text-slate-400">{d.area}</span>}</span>
+                  <span class="text-xs tabular-nums text-slate-500">{d.date ? fmtShort(d.date) : ''}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="mt-3 text-sm text-slate-500">Nothing finished yet this week.</p>
+          )}
+
+          <p class="mt-6 flex items-center gap-2 text-xs font-semibold tracking-widest text-amber-300 uppercase"><span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>Being worked on now</p>
+          {s.doingNow.length ? (
+            <ul class="mt-3 divide-y divide-slate-800">
+              {s.doingNow.map((d) => (
+                <li class="py-2 text-sm"><span class="text-white">{d.title}</span>{d.area && <span class="ml-2 rounded bg-slate-800/80 px-1.5 py-0.5 font-mono text-[11px] text-slate-400">{d.area}</span>}</li>
+              ))}
+            </ul>
+          ) : (
+            <p class="mt-3 text-sm text-slate-500">Nothing in progress right now.</p>
+          )}
+        </div>
+      </div>
+
+      <p class="mt-4 max-w-3xl text-sm text-slate-500">
+        Counts include bugs reported through GitHub and TestFlight. New cards get added as people ask for things, so the open count doesn't only go down, and that's fine.
+      </p>
+    </div>
+  </section>
+)}
+
+<script>
+  // Hover and arrow-key details for the chart. Geometry mirrors the frontmatter.
+  for (const box of document.querySelectorAll<HTMLElement>('[data-progress-chart]')) {
+    const weeks = JSON.parse(box.dataset.weeks ?? '[]') as { week: string; open: number; done: number | null; added: number | null }[];
+    const svg = box.querySelector('svg')!;
+    const cross = svg.querySelector('[data-cross]')!;
+    const hot = svg.querySelector('[data-hot]')!;
+    const hit = svg.querySelector('[data-hit]')!;
+    const tip = box.querySelector<HTMLElement>('[data-tip]')!;
+    const VW = 960, L = 44, R = 20, T = 18, B = 34, PH = 250 - T - B, PW = VW - L - R;
+    const peak = Math.max(10, ...weeks.map((w) => w.open));
+    const step = peak > 150 ? 50 : peak > 60 ? 25 : 10;
+    const max = Math.ceil((peak * 1.15) / step) * step;
+    const x = (i: number) => L + (i * PW) / (weeks.length - 1);
+    const y = (v: number) => T + PH - (v / max) * PH;
+    const fmt = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+    let current = weeks.length - 1;
+    const show = (i: number) => {
+      const w = weeks[i];
+      const scale = box.clientWidth / VW;
+      cross.setAttribute('x1', String(x(i))); cross.setAttribute('x2', String(x(i))); cross.setAttribute('visibility', 'visible');
+      hot.setAttribute('cx', String(x(i))); hot.setAttribute('cy', String(y(w.open))); hot.setAttribute('visibility', 'visible');
+      const extra = w.done === null ? '' : ` · ${w.done} done · ${w.added} added`;
+      tip.textContent = '';
+      tip.append(`Week of ${fmt(w.week)}`, document.createElement('br'));
+      const b = document.createElement('b'); b.className = 'text-white'; b.textContent = `${w.open} open`;
+      tip.append(b, extra);
+      tip.style.left = `${x(i) * scale}px`; tip.style.top = `${y(w.open) * scale}px`; tip.hidden = false;
+    };
+    const hide = () => { cross.setAttribute('visibility', 'hidden'); hot.setAttribute('visibility', 'hidden'); tip.hidden = true; };
+    hit.addEventListener('mousemove', (e) => {
+      const r = svg.getBoundingClientRect();
+      const vx = (((e as MouseEvent).clientX - r.left) / r.width) * VW;
+      current = Math.max(0, Math.min(weeks.length - 1, Math.round((vx - L) / (PW / (weeks.length - 1)))));
+      show(current);
+    });
+    hit.addEventListener('mouseleave', hide);
+    svg.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') { current = Math.max(0, current - 1); show(current); }
+      else if (e.key === 'ArrowRight') { current = Math.min(weeks.length - 1, current + 1); show(current); }
+      else if (e.key === 'Escape') hide();
+    });
+    svg.addEventListener('blur', hide);
+  }
+</script>

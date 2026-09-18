@@ -24,6 +24,10 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # contents: write so the progress snapshot can push the progress-data
+    # branch. main stays protected; nothing here writes to it.
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v7
 
@@ -34,6 +38,14 @@ jobs:
 
       - run: npm ci
 
+      # Records tonight's board counts for the /roadmap progress chart and
+      # writes src/data/progress-history.json for the build. Never fails the
+      # deploy: without a key or with Plane down, the chart just waits.
+      - name: Record roadmap progress
+        run: node scripts/progress-snapshot.mjs --push
+        env:
+          PLANE_API_KEY: ${{ secrets.PLANE_API_KEY }}
+
       - name: Build
         run: npm run build
         env:
@@ -42,6 +54,9 @@ jobs:
           # Actions runners share addresses. The build tolerates a failure
           # here: the shipped strip just disappears.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Plane key for the /roadmap progress section. Titles,
+          # states and dates only; the page never asks for descriptions.
+          PLANE_API_KEY: ${{ secrets.PLANE_API_KEY }}
 
       - uses: actions/upload-pages-artifact@v5
         with:
