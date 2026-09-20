@@ -1,10 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <!-- Leftmost book -->
-  <rect x="3" y="7.5" width="5.5" height="20.5" rx="1.4" fill="#3b9dfa"/>
-  <!-- Middle book with label bars -->
-  <rect x="10" y="12.5" width="5.5" height="15.5" rx="1.4" fill="#3b9dfa"/>
-  <rect x="11.2" y="16.5" width="3.1" height="1.2" rx="0.5" fill="#ffffff"/>
-  <rect x="11.2" y="20.8" width="3.1" height="1.2" rx="0.5" fill="#ffffff"/>
-  <!-- Rightmost book (leaning) -->
-  <path d="M18.5 5.2 L24 4.3 Q25.3 4.1 25.5 5.4 L27 27 Q27.1 28.3 25.8 28.5 L20.3 29.1 Q19 29.3 18.8 27.9 L17.3 6.7 Q17.2 5.4 18.5 5.2 Z" fill="#3b9dfa"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" fill="none">
+  <!-- The Librarium mark, traced from logo.png: three upright books, one leaning,
+       two label cut-outs. Vector so it stays crisp at 16px. -->
+  <g fill="#38a0ff" fill-rule="evenodd">
+    <path d="M144.0 238.0H218.0A40.0 40.0 0 0 1 258.0 278.0V834.0A40.0 40.0 0 0 1 218.0 874.0H144.0A40.0 40.0 0 0 1 104.0 834.0V278.0A40.0 40.0 0 0 1 144.0 238.0Z"/>
+    <path d="M337.0 354.0H476.0A40.0 40.0 0 0 1 516.0 394.0V834.0A40.0 40.0 0 0 1 476.0 874.0H337.0A40.0 40.0 0 0 1 297.0 834.0V394.0A40.0 40.0 0 0 1 337.0 354.0Z M370.5 434.0H442.5A20.5 20.5 0 0 1 442.5 475.0H370.5A20.5 20.5 0 0 1 370.5 434.0Z M370.5 754.0H442.5A20.5 20.5 0 0 1 442.5 795.0H370.5A20.5 20.5 0 0 1 370.5 754.0Z"/>
+    <path d="M595.0 146.0H684.0A40.0 40.0 0 0 1 724.0 186.0V834.0A40.0 40.0 0 0 1 684.0 874.0H595.0A40.0 40.0 0 0 1 555.0 834.0V186.0A40.0 40.0 0 0 1 595.0 146.0Z"/>
+    <path d="M788.3 248.0H849.3A40.0 40.0 0 0 1 889.3 288.0V829.0A40.0 40.0 0 0 1 849.3 869.0H788.3A40.0 40.0 0 0 1 748.3 829.0V288.0A40.0 40.0 0 0 1 788.3 248.0Z" transform="rotate(-6.42 818.8 558.5)"/>
+  </g>
 </svg>
